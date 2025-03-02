@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectAllProducts } from '../redux/slices/ProductDataSlice';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProducts, selectAllProducts } from '../redux/slices/ProductDataSlice';
 import ProductList from '../components/ProductList';
 import { filters } from '../lib/Constants';
 
 function AllProducts() {
+  const dispatch = useDispatch();
   const products = useSelector(selectAllProducts);
   const [filterButton, setFilterButton] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
@@ -31,6 +32,10 @@ function AllProducts() {
   const handleFilterClick = () => {
     setFilterButton(!filterButton);
   }
+
+  useEffect( () => {
+    dispatch(getAllProducts());
+  }, [])
 
   return (
     <div className="flex w-full h-screen bg-zinc-100">

@@ -8,6 +8,6 @@ router.get('/', getAllProducts);
 router.post('/addproduct', authenticate, addNewProduct);
 router.post('/:id/update', authenticate, updateProduct);
 router.delete('/:id/delete', authenticate, deleteProduct);
-router.get(':id/addwishlist', authenticate, addProductToWishlist);
+router.post(':id/addwishlist', authenticate, addProductToWishlist);
 
 export default router;

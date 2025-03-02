@@ -11,7 +11,7 @@ export interface IUser extends Document {
     photo: string,
     gender: "Male" | "Female",
     role: "Admin" | "User",
-    wishlist: mongoose.Types.ObjectId[],
+    wishList: mongoose.Types.ObjectId[],
     cart: mongoose.Types.ObjectId[],
     createdAt: Date,
     updatedAt: Date
@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema<IUser>({
     photo: { type: String },
     gender: { type: String, enum: ["Male", "Female"], default: "Male" },
     role: { type: String, enum: ["Admin", "User"], default: "User" },
-    wishlist: [
+    wishList: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product',

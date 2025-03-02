@@ -93,7 +93,6 @@ function Navbar() {
                             <i className="fa-solid fa-right-from-bracket fa-lg mr-3"></i>
                             Logout
                         </button>
-
                     </div>
                 </div>
             </div>

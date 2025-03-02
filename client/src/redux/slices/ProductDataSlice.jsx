@@ -5,6 +5,7 @@ const intialState = {
     allProducts: [],
     singleProduct: null,
     newProduct: null,
+    wishList: [],
     error: null
 }
 
@@ -76,6 +77,32 @@ export const updateProductRoute = createAsyncThunk(
     }
 )
 
+export const addProductToWishList = createAsyncThunk(
+    "Adding product to the wishlist",
+    async(payload, {getState, rejectWithValue}) => {
+        const state = getState();
+        const token = state.userInfo.userToken;
+        if (!token) return rejectWithValue("Token is missing");
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/product/${payload.productId}/addwishlist`, payload,
+                {
+                    headers: {
+                        'Content-Type': "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            )
+            const result = await response.data;
+
+            return result.success === true ? result.list : null;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
 export const ProductSlice = createSlice({
     name: 'productData',
     initialState: intialState,
@@ -127,13 +154,25 @@ export const ProductSlice = createSlice({
                 state.error = action.payload
                 state.singleProduct = null
             })
+            .addCase(addProductToWishList.pending, (state) => {
+                state.error = null
+            })
+            .addCase(addProductToWishList.fulfilled, (state, action) => {
+                state.wishList = action.payload
+                state.error = null
+            })
+            .addCase(addProductToWishList.rejected, (state, action) => {
+                state.error = action.payload
+                state.singleProduct = null
+            })
     }
 })
 
-export const selectAllProducts = (state) => state.productData.allProducts;
-export const selectNewProduct = (state) => state.productData.newProduct;
-export const selectSingleProduct = (state) => state.productData.singleProduct;
 export const selectProductError = (state) => state.productData.error;
+export const selectNewProduct = (state) => state.productData.newProduct;
+export const selectAllProducts = (state) => state.productData.allProducts;
+export const selectWishList = (state) => state.productData.wishList;
+export const selectSingleProduct = (state) => state.productData.singleProduct;
 
 export const { resetNewProduct, resetSingleProduct, setSingleProduct } = ProductSlice.actions;
 
