@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Product from "../lib/models/Product";
+import User from "../lib/models/User";
 
 export const addNewProduct = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -65,3 +66,29 @@ export const deleteProduct = async (req: Request, res: Response): Promise<any> =
         return res.status(500).json({ success: false, message: error || "Internal Server Error" })
     }
 }
+
+export const addProductToWishlist = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { userId, role } = (req as any).user;
+        if (role === "Admin") {
+            return res.status(403).json({ success: false, message: "UnNamed Action" });
+        }
+
+        const { productId } = req.body;
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product Not Found" });
+        }
+
+        const userUpdate = await User.findByIdAndUpdate(
+            userId, 
+            { $addToSet: { wishlist: productId } }, 
+            { new: true }
+        );
+
+        return res.status(200).json({ success: true, message: "Product Added to Wishlist Successfully", user: userUpdate });
+    } catch (error: any) {
+        return res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+    }
+};

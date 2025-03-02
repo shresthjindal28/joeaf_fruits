@@ -65,27 +65,6 @@ export const RegisterRoute = createAsyncThunk(
     }
 )
 
-export const FindSellerDetails = createAsyncThunk(
-    'findingSellerInfo',
-    async (payload, thunkAPI) => {
-        try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user/finduser`,
-                payload,
-                {
-                    headers: {
-                        'Content-Type': "application/json"
-                    }
-                }
-            )
-            const result = await response.data;
-            
-            return result.success === true ? result.user : null;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.response.data);
-        }
-    }
-)
-
 export const GetUserDetails = createAsyncThunk(
     'Getting User Details form the authToken',
     async (_, { getState, rejectWithValue }) => {
@@ -209,17 +188,6 @@ export const UserInfoSlice = createSlice({
             })
             .addCase(RegisterRoute.rejected, (state, action) => {
                 state.userOnline = false;
-                state.error = action.payload;
-            })
-            .addCase(FindSellerDetails.pending, (state) => {
-                state.sellerInfo = null;
-            })
-            .addCase(FindSellerDetails.fulfilled, (state, action) => {
-                state.sellerInfo= action.payload;
-                state.error = null;
-            })
-            .addCase(FindSellerDetails.rejected, (state, action) => {
-                state.sellerInfo = null;
                 state.error = action.payload;
             })
             .addCase(GetUserDetails.pending, (state) => {
