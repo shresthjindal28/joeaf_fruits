@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { getAllProducts, selectAllProducts, setSingleProduct } from '../redux/slices/ProductDataSlice'
+import { getAllProducts, getUserWishList, selectAllProducts, setSingleProduct } from '../redux/slices/ProductDataSlice'
 import { motion } from "framer-motion";
 import { FadeLeft, FadeRight } from '../utility/animation';
+import { selectUserInfo } from '../redux/slices/UserInfoSlice';
 
 function Home() {
-    const allProducts = useSelector(selectAllProducts)
+    const timerRef = useRef(null)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
     const [imgNumber, setImgNumber] = useState(1)
     const [opacity, setOpacity] = useState(1)
-    const timerRef = useRef(null)
+    
+    const userInfo = useSelector(selectUserInfo);
+    const allProducts = useSelector(selectAllProducts)
 
     const changeImage = useCallback((direction) => {
         // Fade out the current image
@@ -56,7 +60,13 @@ function Home() {
 
     useEffect(() => {
         dispatch(getAllProducts())
-    }, [dispatch])
+    }, [])
+
+    useEffect( () => {
+        if (userInfo){
+            dispatch(getUserWishList());
+        }
+    }, [userInfo])
 
     return (
         <div className='flex flex-col w-full h-full overflow-y-scroll hide-scrollbar'>

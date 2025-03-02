@@ -69,14 +69,12 @@ export const deleteProduct = async (req: Request, res: Response): Promise<any> =
 
 export const addProductToWishlist = async (req: Request, res: Response): Promise<any> => {
     try {
-        console.log("Adding product to the user wishlist");
         const { userId, role } = (req as any).user;
         if (role === "Admin") {
             return res.status(403).json({ success: false, message: "UnNamed Action" });
         }
 
         const { id } = req.params;
-        console.log(id);
         const product = await Product.findById(id);
 
         if (!product) {
@@ -90,6 +88,32 @@ export const addProductToWishlist = async (req: Request, res: Response): Promise
         ).select('wishList');
 
         return res.status(200).json({ success: true, message: "Product Added to Wishlist Successfully", list: userUpdatedList });
+    } catch (error: any) {
+        return res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+    }
+};
+
+export const removeProductToWishlist = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { userId, role } = (req as any).user;
+        if (role === "Admin") {
+            return res.status(403).json({ success: false, message: "UnNamed Action" });
+        }
+
+        const { id } = req.params;
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product Not Found" });
+        }
+
+        const userUpdatedList = await User.findByIdAndUpdate(
+            userId, 
+            { $pull: { wishList: id } }, 
+            { new: true }
+        ).select('wishList');
+
+        return res.status(200).json({ success: true, message: "Product From the Wishlist Successfully", list: userUpdatedList });
     } catch (error: any) {
         return res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
     }

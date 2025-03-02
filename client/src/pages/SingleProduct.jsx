@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux'
-import { addProductToWishList, selectSingleProduct } from '../redux/slices/ProductDataSlice'
+import { addProductToWishList, removeProductFromWishList, selectSingleProduct, selectWishList } from '../redux/slices/ProductDataSlice'
 import { selectUserInfo, selectUserToken } from '../redux/slices/UserInfoSlice';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,9 +11,11 @@ function SingleProduct() {
   const navigate = useNavigate();
   const userInfo = useSelector(selectUserInfo);
   const userToken = useSelector(selectUserToken);
+  const userWishList = useSelector(selectWishList);
   const singleProduct = useSelector(selectSingleProduct);
   const [imgIndex, setImgIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [inList, setInList] = useState(false);
 
   const handleImgChange = (direction) => {
     if (direction === "left") {
@@ -50,14 +52,19 @@ function SingleProduct() {
     }
   };
 
-  // Function to add a product to the wishlist
-  const handleAddToWishlist = async () => {
+  // Function to handle the wishlist button click
+  const handleWishListClick = async () => {
     if (!userInfo) {
       toast.error("Please log in first!", { autoClose: 3000 });
       return;
     }
-    
-    // dispatch(addProductToWishList({productId : singleProduct._id}));
+
+    if (!inList) {
+      dispatch(addProductToWishList({ productId: singleProduct._id }));
+    }
+    else {
+      dispatch(removeProductFromWishList({ productId: singleProduct._id }));
+    }
   }
 
   // Function to add a product to the wishlist
@@ -66,6 +73,21 @@ function SingleProduct() {
       toast.error("Please log in first!", { autoClose: 3000 });
       return;
     }
+  }
+
+  useEffect(() => {
+    const isInList = userWishList.some((item) => item === singleProduct._id);
+    if (isInList) {
+      setInList(true);
+    }
+    else {
+      setInList(false);
+    }
+  }, [userWishList])
+
+  if (!singleProduct) {
+    navigate('/');
+    return
   }
 
   return (
@@ -117,10 +139,10 @@ function SingleProduct() {
                   <div className='grid xl:grid-cols-2 lg:grid-cols-1 sm:grid-cols-2 grid-cols-1 w-full gap-2 h-min'>
                     <div
                       className='flex h-min w-full py-2 border border-2 border-black rounded-md items-center justify-center md:text-xl sm:text-lg text-md font-semibold cursor-pointer bg-gradient-to-r hover:from-black/40 hover:to-black/80 hover:text-white'
-                      onClick={handleAddToWishlist}
+                      onClick={() => handleWishListClick()}
                     >
-                      <i className="fa-regular fa-heart fa-xl pr-5" />
-                      Add To Wishlist
+                      <i className={`fa-${inList ? "solid" : "regular"} fa-heart fa-xl pr-5`} />
+                      { inList ? "Remove from Wishlist" : "Add To Wishlist" }
                     </div>
                     <div
                       className='flex h-min w-full py-2 border border-2 border-black rounded-md items-center justify-center md:text-xl sm:text-lg text-md font-semibold cursor-pointer bg-gradient-to-r hover:from-red-300 hover:to-red-800 hover:text-white'

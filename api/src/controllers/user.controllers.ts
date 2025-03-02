@@ -5,7 +5,7 @@ import User from "../lib/models/User";
 export const getUserInfo = async (req: Request, res: Response): Promise<any> => {
     try {
         const { userId } = (req as any).user;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select('firstName lastName email phone photo gender role');
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -45,6 +45,17 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<any> 
         }
         const userDetails = await User.findById(userid).select("-password");
         return res.status(200).json({ success: true, user: userDetails, message: 'User updated' });
+    } catch (error: any) {
+        return res.status(500).json({ success: false, message: error.message || "Server Error" });
+    }
+}
+
+export const getUserWishList = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const {userId} = (req as any).user;
+        const wishList = await User.findById(userId).select('wishList');
+
+        return res.status(200).json({ success: true, list: wishList});
     } catch (error: any) {
         return res.status(500).json({ success: false, message: error.message || "Server Error" });
     }

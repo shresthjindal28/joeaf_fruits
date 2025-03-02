@@ -11,7 +11,7 @@ const intialState = {
 
 export const addNewProductRoute = createAsyncThunk(
     'Add new Product in the data base',
-    async (payload, {getState, thunkAPI}) => {
+    async (payload, { getState, thunkAPI }) => {
         const state = getState();
         const token = state.userInfo.userToken;
         if (!token) return rejectWithValue("Token is missing");
@@ -37,7 +37,7 @@ export const addNewProductRoute = createAsyncThunk(
 
 export const getAllProducts = createAsyncThunk(
     'Get All the products available',
-    async(payload, thunkAPI) => {
+    async (payload, thunkAPI) => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/product/`, {
                 withCredentials: true
@@ -54,7 +54,7 @@ export const getAllProducts = createAsyncThunk(
 
 export const updateProductRoute = createAsyncThunk(
     "Update the product data",
-    async(payload, {getState, rejectWithValue}) => {
+    async (payload, { getState, rejectWithValue }) => {
         const state = getState();
         const token = state.userInfo.userToken;
         if (!token) return rejectWithValue("Token is missing");
@@ -79,7 +79,7 @@ export const updateProductRoute = createAsyncThunk(
 
 export const addProductToWishList = createAsyncThunk(
     "Adding product to the wishlist",
-    async(payload, {getState, rejectWithValue}) => {
+    async (payload, { getState, rejectWithValue }) => {
         const state = getState();
         const token = state.userInfo.userToken;
         if (!token) return rejectWithValue("Token is missing");
@@ -96,7 +96,60 @@ export const addProductToWishList = createAsyncThunk(
             )
             const result = await response.data;
 
-            return result.success === true ? result.list : null;
+            return result.success === true ? result.list.wishList : null;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+export const removeProductFromWishList = createAsyncThunk(
+    "Removing product from the wishlist",
+    async (payload, { getState, rejectWithValue }) => {
+        const state = getState();
+        const token = state.userInfo.userToken;
+        if (!token) return rejectWithValue("Token is missing");
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/product/${payload.productId}/removewishlist`, payload,
+                {
+                    headers: {
+                        'Content-Type': "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            )
+            const result = await response.data;
+
+            return result.success === true ? result.list.wishList : null;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+export const getUserWishList = createAsyncThunk(
+    'Getting user wishList',
+    async(_, {getState, rejectWithValue}) => {
+        const state = getState();
+        const token = state.userInfo.userToken;
+        const userInfo = state.userInfo.userInfo;
+        if (!token) return rejectWithValue("Token is missing");
+
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/user/${userInfo._id}/wishlist`,
+                {
+                    headers: {
+                        'Content-Type': "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            )
+            const result = await response.data;
+
+            return result.success === true ? result.list.wishList : null;
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
@@ -119,7 +172,7 @@ export const ProductSlice = createSlice({
             state.singleProduct = action.payload;
         }
     },
-    extraReducers: ( builder) => {
+    extraReducers: (builder) => {
         builder
             .addCase(addNewProductRoute.pending, (state) => {
                 state.error = null
@@ -163,7 +216,26 @@ export const ProductSlice = createSlice({
             })
             .addCase(addProductToWishList.rejected, (state, action) => {
                 state.error = action.payload
-                state.singleProduct = null
+            })
+            .addCase(removeProductFromWishList.pending, (state) => {
+                state.error = null
+            })
+            .addCase(removeProductFromWishList.fulfilled, (state, action) => {
+                state.wishList = action.payload
+                state.error = null
+            })
+            .addCase(removeProductFromWishList.rejected, (state, action) => {
+                state.error = action.payload
+            })
+            .addCase(getUserWishList.pending, (state) => {
+                state.error = null
+            })
+            .addCase(getUserWishList.fulfilled, (state, action) => {
+                state.wishList = action.payload
+                state.error = null
+            })
+            .addCase(getUserWishList.rejected, (state, action) => {
+                state.error = action.payload
             })
     }
 })
