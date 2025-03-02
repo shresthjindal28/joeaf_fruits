@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSingleProduct } from '../redux/slices/ProductDataSlice'
 import { useNavigate } from 'react-router-dom';
 import { selectUserInfo } from '../redux/slices/UserInfoSlice';
 
 function ProductList({ allProducts }) {
+    const intervalRefs = useRef({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userInfo = useSelector(selectUserInfo);
+    const [currentImageIndex, setCurrentImageIndex] = useState({});
 
     const handleClick = (item) => {
         dispatch(setSingleProduct(item));
@@ -18,6 +20,13 @@ function ProductList({ allProducts }) {
         dispatch(setSingleProduct(item));
         navigate(`/product/${item._id}/update`);
     }
+
+    useEffect( () => {
+        return () => {
+            // Cleanup all the intervals on component unmount
+            Object.values(intervalRefs.current).forEach(clearInterval);
+        }
+    }, [])
 
     return (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 w-full">
@@ -31,9 +40,40 @@ function ProductList({ allProducts }) {
                     )}
 
                     {/* Product Image */}
-                    <div className="relative aspect-square overflow-hidden" onClick={() => handleClick(item)}>
+                    <div 
+                        className="relative aspect-square overflow-hidden" 
+                        onClick={() => handleClick(item)}
+                        onMouseEnter={ () => {
+                            if(item.images?.length > 1) {
+                                // Clearing the existing interval if there is any
+                                if (intervalRefs.current[item._id]) {
+                                    clearInterval(intervalRefs.current[item._id]);
+                                    delete intervalRefs.current[item._id];
+                                }
+
+                                //Starting the new interval
+                                const interval = setInterval( () => {
+                                    setCurrentImageIndex( prev => ({
+                                        ...prev,
+                                        [item._id]: ((prev[item._id] || 0) + 1) % item.images.length
+                                    }));
+                                }, 2000);
+                                intervalRefs.current[item._id] = interval
+                            }
+                        }}
+                        onMouseLeave={ () => {
+                            if (item.images?.length > 1) {
+                                clearInterval(intervalRefs.current[item._id]);
+                                delete intervalRefs.current[item._id];
+                                setCurrentImageIndex( prev => ({
+                                    ...prev,
+                                    [item._id]: 0
+                                }));
+                            }
+                        }}
+                    >
                         <img
-                            src={item.images[0]}
+                            src={item.images[currentImageIndex[item._id] || 0]}
                             alt={item.name}
                             className="w-full h-full object-cover"
                         />

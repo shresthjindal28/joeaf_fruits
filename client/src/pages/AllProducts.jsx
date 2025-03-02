@@ -37,6 +37,10 @@ function AllProducts() {
     dispatch(getAllProducts());
   }, [])
 
+  if (!products || !Array.isArray(products)) {
+    return <div className='flex flex-grow w-full h-full justify-center items-center'>No products available</div>;
+}
+
   return (
     <div className="flex w-full h-screen bg-zinc-100">
       {/* Filters Section - Sticky */}
