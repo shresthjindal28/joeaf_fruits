@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { selectUserInfo, selectUserOnline } from '../redux/slices/UserInfoSlice'
+import { selectUserInfo, selectUserOnline, userInfoReset } from '../redux/slices/UserInfoSlice'
 import Sidebar from './Sidebar';
 import { menuList } from '../lib/Constants';
 
 function Navbar() {
+    const dispatch = useDispatch();
     const userInfo = useSelector(selectUserInfo);
     const userOnline = useSelector(selectUserOnline);
     const [sidebar, setSideBar] = useState(false);
@@ -14,6 +15,11 @@ function Navbar() {
 
     const handleMenuClick = () => {
         setMenuClick(!menuClick);
+    }
+
+    const handleLogout = () => {
+        setMenuClick(!menuClick);
+        dispatch(userInfoReset());
     }
 
     return (
@@ -83,10 +89,10 @@ function Navbar() {
                             <i className="fa-solid fa-user fa-lg mr-3"></i>
                             Manage Account
                         </Link>
-                        <Link to='/auth' className={`${userInfo ? "flex" : "hidden"} w-full items-center hover:bg-red-700 hover:scale-107 duration-300 py-2 px-3 rounded-md text-nowrap shadow-[0px_30px_15px_-0px_#de0000]`} onClick={handleMenuClick}>
+                        <button className={`${userInfo ? "flex" : "hidden"} w-full items-center hover:bg-red-700 hover:scale-107 duration-300 py-2 px-3 rounded-md text-nowrap shadow-[0px_30px_15px_-0px_#de0000]`} onClick={handleLogout}>
                             <i className="fa-solid fa-right-from-bracket fa-lg mr-3"></i>
                             Logout
-                        </Link>
+                        </button>
 
                     </div>
                 </div>
