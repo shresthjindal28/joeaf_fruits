@@ -24,9 +24,10 @@ function Navbar() {
 
     return (
         <div className='flex min-h-16 w-full'>
-            <div className='flex w-full px-3 pt-2 justify-between bg-green-100 relative'>
+            <div className='flex w-full px-3 pt-2 bg-green-100 justify-between relative' style={{color: "#f25ef5",}}>
                 <div className='flex lg:w-3/4 md:w-4/5 w-full gap-3 h-full'>
-                    <div className='flex px-5 lg:text-3xl text-2xl text-nowrap font-bold items-center'>
+                    <div className='flex lg:px-8 md:px-3 lg:text-3xl text-2xl text-nowrap font-bold items-center sm:justify-center justify-start '>
+                        <i className="fa-solid fa-leaf fa-lg mr-2" style={{color: "#3ae0000",}} />
                         Fresh Food
                     </div>
                     <div className='md:flex hidden items-center gap-5'>
@@ -37,6 +38,7 @@ function Navbar() {
                         }
                     </div>
                 </div>
+                
                 <div className='md:flex hidden lg:w-1/4 w-1/5 h-full justify-end items-center pb-2 pr-5'>
                     {
                         userOnline ?
@@ -60,11 +62,13 @@ function Navbar() {
                             <Link to='/auth' className='lg:text-xl text-lg font-semibold py-1 px-2 bg-gradient-to-r from-black/60 to-black/80 hover:from-black/40 hover:to-black/60 hover:shadow-2xl text-white rounded-md'>Login</Link>
                     }
                 </div>
+
                 <div className='md:hidden flex items-center'>
                     <div className='flex hover:bg-green-200 rounded-lg py-3 px-2 hover:shadow-[0px_10px_14px_-7px_#366347] hover:!scale-110 duration-300' onClick={() => handleMenuClick()}>
                         <i className={`fa-solid fa-${menuClick ? "bars" : "xmark"} fa-xl cursor-pointer`}></i>
                     </div>
                 </div>
+
                 <div 
                     className={`${menuClick ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100 md:hidden flex"} transition-all duration-[900ms] ease-in-out absolute left-0 top-20 w-full px-3 z-100`}
                 >

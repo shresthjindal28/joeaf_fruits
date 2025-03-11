@@ -21,9 +21,8 @@ function ProductList({ allProducts }) {
         navigate(`/product/${item._id}/update`);
     }
 
-    useEffect( () => {
+    useEffect(() => {
         return () => {
-            // Cleanup all the intervals on component unmount
             Object.values(intervalRefs.current).forEach(clearInterval);
         }
     }, [])
@@ -31,7 +30,10 @@ function ProductList({ allProducts }) {
     return (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 w-full">
             {allProducts.map((item, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow relative hover:!scale-105 duration-300">
+                <div
+                    key={index}
+                    className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow relative hover:!scale-105 duration-300 overflow-hidden"
+                >
                     {/* Discount Badge */}
                     {item.discountPercentage > 0 && (
                         <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
@@ -40,20 +42,18 @@ function ProductList({ allProducts }) {
                     )}
 
                     {/* Product Image */}
-                    <div 
-                        className="relative aspect-square overflow-hidden" 
+                    <div
+                        className="relative aspect-square overflow-hidden cursor-pointer"
                         onClick={() => handleClick(item)}
-                        onMouseEnter={ () => {
-                            if(item.images?.length > 1) {
-                                // Clearing the existing interval if there is any
+                        onMouseEnter={() => {
+                            if (item.images?.length > 1) {
                                 if (intervalRefs.current[item._id]) {
                                     clearInterval(intervalRefs.current[item._id]);
                                     delete intervalRefs.current[item._id];
                                 }
 
-                                //Starting the new interval
-                                const interval = setInterval( () => {
-                                    setCurrentImageIndex( prev => ({
+                                const interval = setInterval(() => {
+                                    setCurrentImageIndex(prev => ({
                                         ...prev,
                                         [item._id]: ((prev[item._id] || 0) + 1) % item.images.length
                                     }));
@@ -61,11 +61,11 @@ function ProductList({ allProducts }) {
                                 intervalRefs.current[item._id] = interval
                             }
                         }}
-                        onMouseLeave={ () => {
+                        onMouseLeave={() => {
                             if (item.images?.length > 1) {
                                 clearInterval(intervalRefs.current[item._id]);
                                 delete intervalRefs.current[item._id];
-                                setCurrentImageIndex( prev => ({
+                                setCurrentImageIndex(prev => ({
                                     ...prev,
                                     [item._id]: 0
                                 }));
@@ -132,20 +132,54 @@ function ProductList({ allProducts }) {
                                     </span>
                                 )}
                             </div>
-
-                            {/* Add Button */}
-                            {
-                                userInfo?.role === "Admin" ?
-                                    <div className='flex gap-3'>
-                                        <div className='flex py-1 px-2 rounded-md bg-gradient-to-r from-gray-400 to-gray-700 hover:from-gray-500 hover:to-gray-900 text-white cursor-pointer shadow hover:shadow-2xl' onClick={() => handleClick(item)}>View</div>
-                                        <div className='flex py-1 px-2 rounded-md bg-gradient-to-r from-blue-300 to-blue-600 hover:from-blue-500 hover:to-blue-900 text-white cursor-pointer shadow hover:shadow-2xl' onClick={() => handleEditClick(item)}>Edit</div>
-                                    </div>
-                                    :
-                                    <button className={`bg-blue-500 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors`}>
-                                        Add
-                                    </button>
-                            }
                         </div>
+                    </div>
+
+                    {/* Hover Buttons */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white/90 to-transparent pt-4 px-3 transform transition-all duration-300 translate-y-full group-hover:translate-y-0">
+                        {userInfo?.role === "Admin" ? (
+                            <div className="flex gap-2 justify-end mb-2">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleClick(item);
+                                    }}
+                                    className="px-3 py-1 rounded-md bg-gray-600 text-white hover:bg-gray-700 transition-colors"
+                                >
+                                    <i className="fa-solid fa-eye fa-xs mr-1"></i>
+                                    View
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditClick(item);
+                                    }}
+                                    className="px-3 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                                >
+                                    <i className="fa-solid fa-pen-to-square fa-bounce mr-1"></i>
+                                    Edit
+                                </button>
+                            </div>
+                        ) : (
+                            <div
+                                className='flex w-full gap-3 pb-2 justify-end'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                <div className='flex p-2 bg-green-300 text-white rounded-full items-center justify-center cursor-pointer shadow-2xl'>
+                                    <i className="fa-solid fa-heart"></i>
+                                </div>
+                                <div className='flex p-2 bg-green-300 text-white rounded-full items-center justify-center cursor-pointer shadow-2xl'>
+                                    <i className="fa-solid fa-cart-shopping"></i>
+                                </div>
+                                {/* <button
+                                    className="w-max px-3 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700 transition-colors"
+                                >
+                                    Add to Cart
+                                </button> */}
+                            </div>
+                        )}
                     </div>
                 </div>
             ))}

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Product from "../lib/models/Product";
 import User from "../lib/models/User";
+import Product from "../lib/models/Product";
 
 export const addNewProduct = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -9,21 +9,15 @@ export const addNewProduct = async (req: Request, res: Response): Promise<any> =
             return res.status(403).json({ success: false, message: "Unauthorized Access!" });
         }
 
-
-        const { type, name, variety, price, quantity, description, images } = req.body;
+        const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity } = req.body;
 
         const product = await Product.create({
-            type,
-            name,
-            variety,
-            price,
-            quantity,
-            description,
-            images
+            name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
         });
+
         return res.status(201).json({ success: true, product });
     } catch (error) {
-        return res.status(500).json({ message: "Error creating product" });
+        return res.status(500).json({ message: "Error creating product", error });
     }
 }
 

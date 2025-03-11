@@ -1,30 +1,73 @@
-import mongoose, { Document } from "mongoose";
+import { Document, Schema, model } from 'mongoose';
 
-// Define the interface for Product
-export interface IProduct extends Document {
-    _id: mongoose.Types.ObjectId,
-    type: string;
-    name: string;
-    variety: string;
+interface ProductVariant {
+    weight: number;
+    unit: 'g' | 'kg' | 'pcs';
     price: number;
-    quantity: number
-    images: string[];
-    description: string;
+    originalPrice?: number;
 }
 
-// Define the Product Schema
-const ProductSchema = new mongoose.Schema<IProduct>({
-    type: { type: String, required: true },
-    name: { type: String, required: true },
-    variety: { type: String, required: true},
-    price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
-    images: [
-        { type: String }
-    ],
-    description: { type: String, required: true }
-})
+export interface ProductDocument extends Document {
+    name: string;
+    slug: string;
+    description: string;
+    category: 'fresh' | 'organic' | 'exotic' | 'berries';
+    variants: ProductVariant[];
+    images: string[];
+    tags: string[];
+    origin: 'indian' | 'imported';
+    nutritionalInfo: {
+        calories: number;
+        vitamins: string[];
+    };
+    isFeatured: boolean;
+    discountPercentage?: number;
+    stockQuantity: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
-// Create and export the Product Model
-const Product = mongoose.model<IProduct>('Product', ProductSchema);
+const productSchema = new Schema<ProductDocument>(
+    {
+        name: { type: String, required: true, index: true },
+        slug: { type: String, required: true, unique: true },
+        description: { type: String, required: true },
+        category: {
+            type: String,
+            enum: ['fresh', 'organic', 'exotic', 'berries'],
+            required: true,
+        },
+        variants: [
+            {
+                weight: { type: Number, required: true },
+                unit: { type: String, enum: ['g', 'kg', 'pcs'], required: true },
+                price: { type: Number, required: true },
+                originalPrice: Number,
+            },
+        ],
+        images: [
+            { type: String, required: true }
+        ],
+        tags: [{ type: String, index: true }],
+        origin: {
+            type: String,
+            enum: ['indian', 'imported'],
+            required: true,
+        },
+        nutritionalInfo: {
+            calories: Number,
+            vitamins: [String],
+        },
+        isFeatured: { type: Boolean, default: false },
+        discountPercentage: { type: Number, default: 0},
+        stockQuantity: { type: Number, required: true, min: 0 },
+    },
+    { timestamps: true }
+);
+
+// Indexes for common queries
+productSchema.index({ name: 'text', tags: 'text' });
+productSchema.index({ category: 1, origin: 1 });
+
+const Product = model<ProductDocument>('Product', productSchema);
 export default Product;

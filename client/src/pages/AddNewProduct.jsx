@@ -12,18 +12,65 @@ function AddNewProduct() {
     const dispatch = useDispatch();
     const [isLoading, setLoading] = useState(false);
     const [fruitData, setFruitData] = useState({
-        type: '',
         name: '',
-        variety: '',
-        price: '',
-        quantity: '',
+        slug: '',
         description: '',
-        images: []
+        category: 'fresh',
+        variants: [{
+            weight: '',
+            unit: 'g',
+            price: '',
+            originalPrice: ''
+        }],
+        images: [],
+        tags: [],
+        origin: 'indian',
+        nutritionalInfo: {
+            calories: '',
+            vitamins: []
+        },
+        discountPercentage: 0,
+        stockQuantity: 0
     });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFruitData((prev) => ({ ...prev, [name]: value }));
+        if (name.startsWith('nutritionalInfo.')) {
+            const field = name.split('.')[1];
+            setFruitData(prev => ({
+                ...prev,
+                nutritionalInfo: {
+                    ...prev.nutritionalInfo,
+                    [field]: value
+                }
+            }));
+        } else {
+            setFruitData((prev) => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handleVariantChange = (index, e) => {
+        const { name, value } = e.target;
+        const variants = [...fruitData.variants];
+        variants[index][name] = value;
+        setFruitData({ ...fruitData, variants });
+    };
+
+    const addVariant = () => {
+        setFruitData({
+            ...fruitData,
+            variants: [...fruitData.variants, {
+                weight: '',
+                unit: 'g',
+                price: '',
+                originalPrice: ''
+            }]
+        });
+    };
+
+    const removeVariant = (index) => {
+        const variants = fruitData.variants.filter((_, i) => i !== index);
+        setFruitData({ ...fruitData, variants });
     };
 
     const handleImageUpload = async (e) => {
@@ -54,11 +101,21 @@ function AddNewProduct() {
         }));
     };
 
+    const handleTagsChange = (e) => {
+        const tags = e.target.value.split(',').map(tag => tag.trim());
+        setFruitData({ ...fruitData, tags });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
         dispatch(resetNewProduct());
-        dispatch(addNewProductRoute(fruitData));
+
+        // Generate slug from name
+        const slug = fruitData.name.toLowerCase().replace(/\s+/g, '-');
+        const productData = { ...fruitData, slug };
+
+        dispatch(addNewProductRoute(productData));
     };
 
     useEffect(() => {
@@ -76,7 +133,7 @@ function AddNewProduct() {
                     images: []
                 })
             }
-            else if (newProduct ){
+            else if (newProduct) {
                 toast.success("New Item Added Successfully", { autoClose: 5000 });
                 setLoading(false);
                 console.log("New product added : ", newProduct);
@@ -87,54 +144,46 @@ function AddNewProduct() {
     }, [newProduct, err])
 
     return (
-        <div className="flex items-center justify-center h-full w-full bg-gray-100 p-5">
+        <div className="flex items-center justify-center h-full w-full bg-gray-100 p-3">
             <ToastContainer position="top-right" />
+
             {/* Loading Overlay */}
             {isLoading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                     <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
                 </div>
             )}
+
+            {/* Form */}
             <form
                 onSubmit={handleSubmit}
-                className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl space-y-6 max-h-[80vh] overflow-y-scroll hide-scrollbar"
+                className="bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl space-y-6 max-h-[86vh] overflow-y-scroll hide-scrollbar"
             >
-                <h2 className="text-2xl font-bold text-gray-800">Add New Fruit</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-3">Add New Fruit</h2>
 
-                {/* Fruit type */}
+                {/* Category */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2" htmlFor="name">
-                        Fruit Type
-                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">Category</label>
                     <select
-                        name="type"
-                        id="type"
-                        value={fruitData.type}
+                        name="category"
+                        value={fruitData.category}
                         onChange={handleChange}
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
                         required
                     >
-                        <option value="" disabled>
-                            Select a fruit type
-                        </option>
-                        <option value="Mango">Mango</option>
-                        <option value="Orange">Orange</option>
-                        <option value="Strawberry">Strawberry</option>
-                        <option value="Apple">Apple</option>
-                        <option value="Banana">Banana</option>
-                        {/* Add more options as needed */}
+                        <option value="fresh">Fresh</option>
+                        <option value="organic">Organic</option>
+                        <option value="exotic">Exotic</option>
+                        <option value="berries">Berries</option>
                     </select>
                 </div>
 
-                {/* Fruit Name */}
+                {/* Name */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2" htmlFor="name">
-                        Fruit Name
-                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">Fruit Name</label>
                     <input
                         type="text"
                         name="name"
-                        id="name"
                         value={fruitData.name}
                         onChange={handleChange}
                         placeholder="Enter fruit name"
@@ -143,58 +192,164 @@ function AddNewProduct() {
                     />
                 </div>
 
-                {/* Fruit Variety */}
+                {/* Variants */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2" htmlFor="name">
-                        Fruit Variety
-                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">Product Variants</label>
+                    {fruitData.variants.map((variant, index) => (
+                        <div key={index} className="mb-4 p-3 border rounded-lg">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm text-gray-600">Weight</label>
+                                    <input
+                                        type="number"
+                                        name="weight"
+                                        value={variant.weight}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border rounded"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600">Unit</label>
+                                    <select
+                                        name="unit"
+                                        value={variant.unit}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border rounded"
+                                    >
+                                        <option value="g">Grams</option>
+                                        <option value="kg">Kilograms</option>
+                                        <option value="pcs">Pieces</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600">Price</label>
+                                    <input
+                                        type="number"
+                                        name="price"
+                                        value={variant.price}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border rounded"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600">Original Price</label>
+                                    <input
+                                        type="number"
+                                        name="originalPrice"
+                                        value={variant.originalPrice}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border rounded"
+                                    />
+                                </div>
+                            </div>
+                            {fruitData.variants.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => removeVariant(index)}
+                                    className="mt-2 text-red-500 text-sm hover:text-red-700"
+                                >
+                                    Remove Variant
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={addVariant}
+                        className="text-green-500 hover:text-green-700 text-sm"
+                    >
+                        + Add Variant
+                    </button>
+                </div>
+
+                {/* Origin */}
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Origin</label>
+                    <select
+                        name="origin"
+                        value={fruitData.origin}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                        required
+                    >
+                        <option value="indian">Indian</option>
+                        <option value="imported">Imported</option>
+                    </select>
+                </div>
+
+                {/* Nutritional Info */}
+                <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Calories (per 100g)</label>
+                        <input
+                            type="number"
+                            name="nutritionalInfo.calories"
+                            value={fruitData.nutritionalInfo.calories}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-md"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Vitamins (comma separated)</label>
+                        <input
+                            type="text"
+                            name="nutritionalInfo.vitamins"
+                            value={fruitData.nutritionalInfo.vitamins.join(', ')}
+                            onChange={(e) => {
+                                const vitamins = e.target.value.split(',').map(v => v.trim());
+                                setFruitData(prev => ({
+                                    ...prev,
+                                    nutritionalInfo: {
+                                        ...prev.nutritionalInfo,
+                                        vitamins
+                                    }
+                                }));
+                            }}
+                            className="w-full p-3 border border-gray-300 rounded-md"
+                            placeholder="C, K, A..."
+                        />
+                    </div>
+                </div>
+
+                {/* Tags */}
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Tags (comma separated)</label>
                     <input
                         type="text"
-                        name="variety"
-                        id="variety"
-                        value={fruitData.variety}
-                        onChange={handleChange}
-                        placeholder="Enter fruit variety"
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        required
+                        value={fruitData.tags.join(', ')}
+                        onChange={handleTagsChange}
+                        className="w-full p-3 border border-gray-300 rounded-md"
+                        placeholder="organic, summer-fruits, exotic..."
                     />
                 </div>
 
-                {/* Price */}
+                {/* Stock Quantity */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2" htmlFor="price">
-                        Price ($) per unit of quantity
-                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">Stock Quantity</label>
                     <input
                         type="number"
-                        name="price"
-                        id="price"
-                        value={fruitData.price}
+                        name="stockQuantity"
+                        value={fruitData.stockQuantity}
                         onChange={handleChange}
-                        placeholder="Enter price"
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                        className="w-full p-3 border border-gray-300 rounded-md"
                         required
                         min="0"
-                        step="0.01"
                     />
                 </div>
 
-                {/* Quantity */}
+                {/* Discount Percentage */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2" htmlFor="price">
-                        Fruit quantity available
-                    </label>
+                    <label className="block text-gray-700 font-semibold mb-2">Discount Percentage</label>
                     <input
                         type="number"
-                        name="quantity"
-                        id="quantity"
-                        value={fruitData.quantity}
+                        name="discountPercentage"
+                        value={fruitData.discountPercentage}
                         onChange={handleChange}
-                        placeholder="Enter quantity of fruit available"
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        required
+                        className="w-full p-3 border border-gray-300 rounded-md"
                         min="0"
-                        step="0.01"
+                        max="100"
                     />
                 </div>
 
@@ -243,14 +398,14 @@ function AddNewProduct() {
 
                     {/* Image Previews */}
                     {fruitData.images.length > 0 && (
-                        <div className="mt-4 border border-gray-200 rounded-lg p-4">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        <div className="mt-4 border border-gray-200 rounded-lg p-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                 {fruitData.images.map((url) => (
-                                    <div key={url} className="relative aspect-square group">
+                                    <div key={url} className="rounded-md relative aspect-square group shadow-md hover:shadow-2xl transition-shadow relative hover:!scale-105 duration-300">
                                         <img
                                             src={url}
                                             alt="Preview"
-                                            className="w-full h-full object-cover rounded-lg"
+                                            className="w-full h-full object-cover rounded-md"
                                         />
                                         <button
                                             type="button"
