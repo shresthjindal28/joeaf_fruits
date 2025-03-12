@@ -1,11 +1,23 @@
-import React from 'react'
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { selectCartList } from '../redux/slices/ProductDataSlice';
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeProductFromCart, selectCartList } from '../redux/slices/ProductDataSlice';
 
 function CartPage() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const cartItems = useSelector(selectCartList);
 
+    const handleRemoveItem = (item) => {
+        dispatch(removeProductFromCart({ productId: item._id }));
+    }
+
+    useEffect( () => {
+        if (cartItems.length === 0) {
+            navigate('/');
+        }
+    }, [cartItems])
+    
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 via-amber-50 to-yellow-50 flex flex-col items-center py-8 px-6">
             {/* Animated Background Elements */}
@@ -37,6 +49,7 @@ function CartPage() {
                                         <img
                                             src={item.images[0]}
                                             alt=""
+                                            loading='lazy'
                                             className="w-48 h-60 object-cover rounded-lg border-2 border-green-100"
                                         />
                                         {item.discountPercentage > 0 && (
@@ -57,7 +70,10 @@ function CartPage() {
                                                     <i className="fa-solid fa-tag text-xs" /> {item.category}
                                                 </p>
                                             </div>
-                                            <button className="text-amber-600 hover:text-red-600 transition-colors">
+                                            <button 
+                                                className="text-amber-600 hover:text-red-600 transition-colors"
+                                                onClick={() => handleRemoveItem(item)}
+                                            >
                                                 <i className="fa-solid fa-trash-can-arrow-up fa-lg" />
                                             </button>
                                         </div>

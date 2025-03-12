@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
+import compression from "compression";
 import { ConnectToMongoDB } from './lib/db';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
@@ -16,6 +17,8 @@ app.use(cors({
   credentials: true
 }))
 
+// Enable Gzip compression for all responses - Reduces API payload size by ~70%.
+app.use(compression());
 app.use(express.json());
 
 app.use('/auth', authRoutes);

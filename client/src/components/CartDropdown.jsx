@@ -1,9 +1,9 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import { removeProductFromCart, selectCartList } from '../redux/slices/ProductDataSlice'
-import { Link } from 'react-router-dom';
 
-function CartDropdown({ setShowCart }) {
+const CartDropdown = React.memo(({ setShowCart }) => {
     const dispatch = useDispatch();
     const userCartList = useSelector(selectCartList);
 
@@ -77,6 +77,6 @@ function CartDropdown({ setShowCart }) {
             </div>
         </div>
     )
-}
+});
 
 export default CartDropdown

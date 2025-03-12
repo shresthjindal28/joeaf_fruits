@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { addProductToCart, addProductToWishList, removeProductFromCart, removeProductFromWishList, selectCartList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice'
 import { selectUserInfo } from '../redux/slices/UserInfoSlice';
+import { addProductToCart, addProductToWishList, removeProductFromCart, removeProductFromWishList, selectCartList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice'
 
-function ProductList({ allProducts }) {
+const ProductList = React.memo(({ allProducts }) => {
     const intervalRefs = useRef({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -118,7 +118,8 @@ function ProductList({ allProducts }) {
                     >
                         <img
                             src={item.images[currentImageIndex[item._id] || 0]}
-                            alt={item.name}
+                            alt=""
+                            loading='lazy'
                             className="w-full h-[38vh] object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -219,6 +220,6 @@ function ProductList({ allProducts }) {
             ))}
         </div>
     )
-}
+})
 
 export default ProductList

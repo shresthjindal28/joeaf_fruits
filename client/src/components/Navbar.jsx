@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Sidebar from './Sidebar';
+import CartDropdown from './CartDropdown';
 import { menuList } from '../lib/Constants';
 import { selectCartList } from '../redux/slices/ProductDataSlice';
 import { selectUserInfo, selectUserOnline, userInfoReset } from '../redux/slices/UserInfoSlice'
-import CartDropdown from './CartDropdown';
 
 function Navbar() {
     const dispatch = useDispatch();

@@ -1,9 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import uploadFile from '../components/FileUploadar';
 import { ToastContainer, toast } from 'react-toastify';
+import uploadFile from '../components/FileUploadar';
 import { resetNewProduct, selectNewProduct, selectProductError, selectSingleProduct, setSingleProduct, updateProductRoute } from '../redux/slices/ProductDataSlice';
-import { useNavigate } from 'react-router-dom';
 
 function UpdateProduct() {
   const dispatch = useDispatch();
