@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { removeProductFromCart, selectCartList } from '../redux/slices/ProductDataSlice'
 import { Link } from 'react-router-dom';
 
-function CartDropdown() {
+function CartDropdown({ setShowCart }) {
     const dispatch = useDispatch();
     const userCartList = useSelector(selectCartList);
 
@@ -59,12 +59,14 @@ function CartDropdown() {
                                 <Link
                                     to="/cart"
                                     className="bg-gradient-to-r from-green-500 to-amber-500 text-white py-2 px-4 rounded-lg text-center hover:from-green-600 hover:to-amber-600 transition-all"
+                                    onClick={() => ( setShowCart(false) )}
                                 >
                                     View Cart
                                 </Link>
                                 <Link
                                     to="/checkout"
                                     className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white py-2 px-4 rounded-lg text-center hover:from-amber-600 hover:to-yellow-600 transition-all"
+                                    onClick={() => ( setShowCart(false) )}
                                 >
                                     Checkout
                                 </Link>

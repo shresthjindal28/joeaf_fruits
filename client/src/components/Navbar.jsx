@@ -32,7 +32,7 @@ function Navbar() {
                 <div className='flex lg:w-3/4 md:w-4/5 w-full lg:gap-70 md:gap-20 h-full'>
                     <div className='flex xl:ps-5 lg:ps-4 sm:ps-2 ps-1 px-3 lg:text-2xl text-xl text-nowrap text-orange-700 font-bold items-center sm:justify-center justify-start '>
                         <i className="fa-solid fa-leaf fa-lg mr-2 " style={{ color: "#fae905", }} />
-                        <Link to={"/sfdlfjsdjf"}>Joeaf Fruits</Link>
+                        <Link to={"/"}>Joeaf Fruits</Link>
                     </div>
                     <div className='md:flex hidden items-center gap-4 text-amber-800'>
                         {
@@ -48,7 +48,7 @@ function Navbar() {
                         userOnline ? (
                             <>
                                 {/* Cart */}
-                                {showCart && <CartDropdown />}
+                                {showCart && <CartDropdown setShowCart={setShowCart}/>}
                                 {
                                     userInfo?.role !== "Admin" && <div className='relative flex items-center gap-2 text-3xl cursor-pointer' onClick={() => (setShowCart(!showCart))}>
                                         🛒
@@ -84,7 +84,7 @@ function Navbar() {
 
                 <div className='md:hidden flex gap-3 items-center'>
                     {/* Cart */}
-                    {showCart && <CartDropdown />}
+                    {showCart && <CartDropdown setShowCart={setShowCart} />}
                     {
                         userInfo?.role !== "Admin" && <div className='relative flex items-center gap-2 text-2xl cursor-pointer' onClick={() => (setShowCart(!showCart))}>
                             🛒
