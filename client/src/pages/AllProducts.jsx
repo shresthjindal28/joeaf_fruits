@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllProducts, selectAllProducts } from '../redux/slices/ProductDataSlice';
-import ProductList from '../components/ProductList';
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import ProductCard from '../components/ProductCard';
 import { filters } from '../lib/Constants';
 
 function AllProducts() {
   const dispatch = useDispatch();
   const products = useSelector(selectAllProducts);
+  const [columns, setColumns] = useState(1);
   const [filterButton, setFilterButton] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
 
@@ -39,9 +42,47 @@ function AllProducts() {
     setFilterButton(!filterButton);
   }
 
+  // Compute rows (each row contains multiple products)
+  const rowCount = Math.ceil(sortedProducts.length / columns);
+
+  // Render row with multiple items per row
+  const ProductRow = ({ index, style }) => {
+    const startIndex = index * columns; // First product in row
+    const items = sortedProducts.slice(startIndex, startIndex + columns); // Get products for the row
+
+    return (
+      <div style={style} className={`flex grid grid-cols-${columns} sm:gap-0`}>
+        {items.map((product) => (
+          <div key={product._id} className="flex-1 min-w-0">
+            <ProductCard product={product} />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   useEffect(() => {
     dispatch(getAllProducts());
   }, [])
+
+  // Adjust columns based on screen size
+  useEffect(() => {
+    const updateColumns = () => {
+      if (window.innerWidth >= 1536) {
+        setColumns(4); // 2xl: 3 columns
+      } else if (window.innerWidth >= 1024) {
+        setColumns(3); // lg: 3 columns
+      } else if (window.innerWidth >= 500) {
+        setColumns(2); // xs: 2 columns
+      } else {
+        setColumns(1); // Default: 1 column
+      }
+    };
+
+    updateColumns(); // Set on load
+    window.addEventListener("resize", updateColumns);
+    return () => window.removeEventListener("resize", updateColumns);
+  }, []);
 
   if (!products || !Array.isArray(products)) {
     return <div className='flex flex-grow w-full h-full justify-center items-center'>No products available</div>;
@@ -144,9 +185,22 @@ function AllProducts() {
           </div>
         )}
 
-        {/* Product List - Scrollable */}
         <div className="flex-grow overflow-y-auto [height:calc(100dvh-100px)] hide-scrollbar shadow-inner rounded-xl p-3">
-          <ProductList allProducts={sortedProducts} />
+          <div className="h-full">
+            <AutoSizer>
+              {({ height, width }) => (
+                <List
+                  width={width}
+                  itemSize={550}
+                  height={height}
+                  itemCount={rowCount}
+                  className="hide-scrollbar"
+                >
+                  {ProductRow}
+                </List>
+              )}
+            </AutoSizer>
+          </div>
         </div>
       </div>
     </div>

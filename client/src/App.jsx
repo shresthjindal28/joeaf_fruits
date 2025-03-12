@@ -46,7 +46,7 @@ function App() {
 
   // Protected routes
   const protectedRoutes = [
-    { path: "/profile", element: <ProfilePage /> },
+    { path: "/:id/profile", element: <ProfilePage /> },
     { path: "/cart", element: <CartPage /> },
     { path: "/checkout", element: <CheckoutPage /> },
     { path: "/addproduct", element: <AddNewProduct /> },
