@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserInfo } from '../redux/slices/UserInfoSlice';
-import { getUserWishList, removeProductFromWishList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice';
+import { addProductToCart, getUserCartList, getUserWishList, removeProductFromCart, removeProductFromWishList, selectCartList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice';
 import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUserInfo);
+  const userCart = useSelector(selectCartList);
   const userWishList = useSelector(selectWishList);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(user);
@@ -30,8 +31,20 @@ const ProfilePage = () => {
   };
 
   const handleWishListClick = async (item) => {
-    dispatch(removeProductFromWishList({productId: item._id}));
+    dispatch(removeProductFromWishList({ productId: item._id }));
   };
+
+  // Function to handle the Cart button
+  const handleCartClick = (data) => {
+    const isInList = userCart.some((item) => item._id === data._id);
+
+    if (!isInList) {
+      dispatch(addProductToCart({ productId: data._id }));
+    }
+    else {
+      dispatch(removeProductFromCart({ productId: data._id }));
+    }
+  }
 
   const handleFruitClick = (fruit) => {
     dispatch(setSingleProduct(fruit))
@@ -42,17 +55,18 @@ const ProfilePage = () => {
     navigate('/');
   }
 
-  useEffect( () => {
+  useEffect(() => {
     setWishlistItems(userWishList);
   }, [userWishList])
 
-  useEffect( () => {
+  useEffect(() => {
     dispatch(getUserWishList());
+    dispatch(getUserCartList());
   }, [])
 
   return (
     <div className="flex w-screen min-h-screen py-8 xl:px-48 lg:px-30 md:px-8 sm:px-5 bg-gradient-to-b from-amber-50 to-yellow-50 overflow-hidden">
-      <div className="flex flex-col w-full h-full mx-auto px-5">
+      <div className="flex flex-col w-full h-full mx-auto px-3.5">
         {/* Account Details Section */}
         <div className="bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-50 rounded-lg shadow-lg p-6 mb-8 border-2 border-amber-500">
           <div className="flex justify-between items-center mb-8">
@@ -107,7 +121,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Update button */}
-          <div className="flex w-full justify-end pr-3 pt-6">
+          <div className="flex w-full sm:justify-end justify-center pr-3 pt-6">
             <button
               onClick={editMode ? handleUpdateAccount : () => setEditMode(true)}
               className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black px-8 py-3 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-amber-500/30"
@@ -160,9 +174,19 @@ const ProfilePage = () => {
                           >
                             <i className={`fa-${userWishList.some((e) => e._id === item._id) ? "solid" : "regular"} fa-heart fa-lg`} />
                           </button>
-                          <button className="hover:bg-white/50 rouned-full p-1">
+                          <button
+                            className="hover:bg-white/50 rouned-full p-1"
+                            onClick={() => handleCartClick(item)}
+                          >
                             {/* 🛒 */}
-                            <i className="fa-solid fa-cart-shopping" style={{ color: "#01060e", }} />
+                            {
+                              userCart.some((e) => e._id === item._id) ? (
+                                <i className={`fa-solid fa-cart-shopping`} style={{ color: "#01060e", }} />
+                              )
+                                : (
+                                  <span className="text-black">🛒</span>
+                                )
+                            }
                           </button>
                           <button className="hover:bg-white/50 rouned-full p-1" onClick={() => (handleFruitClick(item))}>
                             <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
@@ -206,8 +230,11 @@ const ProfilePage = () => {
                               </span>
                             )}
                           </div>
-                          <button className="bg-green-500 text-white sm:text-xl text-sm px-3 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                            Add to Cart
+                          <button
+                            className="bg-green-500 text-white sm:text-xl text-sm px-2.5 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                            onClick={() => handleCartClick(item)}
+                          >
+                            {userCart.find(data => data._id === item._id) ? "Remove from Cart" : "Add to Cart"}
                           </button>
                         </div>
                       </div>

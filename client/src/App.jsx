@@ -15,6 +15,8 @@ import AddNewProduct from "./pages/AddNewProduct";
 import SingleProduct from "./pages/SingleProduct";
 import UpdateProduct from "./pages/UpdateProduct";
 import { selectUserInfo } from "./redux/slices/UserInfoSlice";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 function App() {
   const navigate = useNavigate();
@@ -47,6 +49,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="*" element={<ErrorPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/:id/profile" element={<ProfilePage />} />
