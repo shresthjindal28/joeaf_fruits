@@ -11,7 +11,7 @@ const app = express();
 ConnectToMongoDB();
 
 app.use(cors({
-  origin: [process.env.CLIENT_URL ? process.env.CLIENT_URL : "http://localhost:5173", /\.vercel\.app$/],
+  origin: "https://furitsellingsite.vercel.app",
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }))
