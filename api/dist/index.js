@@ -14,7 +14,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 (0, db_1.ConnectToMongoDB)();
 app.use((0, cors_1.default)({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL : "http://localhost:5173",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));

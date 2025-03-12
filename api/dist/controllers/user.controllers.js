@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserInfo = exports.getUserInfo = void 0;
+exports.getUserCartList = exports.getUserWishList = exports.updateUserInfo = exports.getUserInfo = void 0;
 const User_1 = __importDefault(require("../lib/models/User"));
 const getUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.user;
-        const user = yield User_1.default.findById(userId);
+        const user = yield User_1.default.findById(userId).select('firstName lastName email phone photo gender role');
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
@@ -55,3 +55,45 @@ const updateUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updateUserInfo = updateUserInfo;
+const getUserWishList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.user;
+        const user = yield User_1.default.findById(userId)
+            .select('wishList')
+            .populate({
+            path: 'wishList',
+            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            model: 'Product'
+        });
+        res.json({
+            success: true,
+            wishlist: (user === null || user === void 0 ? void 0 : user.wishList) ? user.wishList : []
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+exports.getUserWishList = getUserWishList;
+const getUserCartList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.user;
+        const user = yield User_1.default.findById(userId)
+            .select('cart')
+            .populate({
+            path: 'cart',
+            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            model: 'Product'
+        });
+        res.json({
+            success: true,
+            cartlist: (user === null || user === void 0 ? void 0 : user.cart) ? user.cart : []
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+exports.getUserCartList = getUserCartList;

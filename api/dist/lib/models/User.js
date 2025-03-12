@@ -15,7 +15,7 @@ const UserSchema = new mongoose_1.default.Schema({
     photo: { type: String },
     gender: { type: String, enum: ["Male", "Female"], default: "Male" },
     role: { type: String, enum: ["Admin", "User"], default: "User" },
-    wishlist: [
+    wishList: [
         {
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: 'Product',
