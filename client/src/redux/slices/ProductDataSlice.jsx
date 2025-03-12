@@ -40,7 +40,7 @@ export const getAllProducts = createAsyncThunk(
     'Get All the products available',
     async (payload, thunkAPI) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}product/`, {
+            const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/product/`, {
                 withCredentials: true
             })
 
