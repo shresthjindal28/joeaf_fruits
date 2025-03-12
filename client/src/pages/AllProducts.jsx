@@ -48,87 +48,104 @@ function AllProducts() {
   }
 
   return (
-    <div className="flex w-full h-screen pb-10">
+    <div className="flex w-screen h-screen pb-10 overflow-hidden">
       {/* Filters Section - Sticky */}
-      <div className="md:flex hidden xl:w-1/5 w-1/4 h-full py-4 lg:pl-15 md:pl-5 sticky top-0 overflow-y-auto">
-        <div className="flex flex-col gap-5 w-full">
-          <div className="flex w-full justify-between items-center">
-            <span className="text-2xl font-bold">Filters</span>
-            <button
-              onClick={() => setSelectedFilter(null)}
-              className={`${selectedFilter ? 'flex' : 'hidden'} px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
-            >
-              Clear all
-            </button>
+      <div className="hidden md:block min-h-screen xl:w-1/4 lg:w-1/4 w-54 py-4 xl:pl-10 lg:pl-6 md:pl-4 xl:pr-12 lg:pr-5 md:pr-2 bg-white/80 backdrop-blur-lg border-r-2 border-amber-100 sticky top-0">
+        <div className="flex flex-col gap-6 w-full h-full">
+          <h4 className="text-2xl font-bold text-green-800 flex items-center gap-2">
+            <i className="fa-solid fa-filter" />
+            Filters
+          </h4>
+
+          <div className="space-y-4">
+            <h6 className="text-lg font-semibold text-amber-700">Sort By</h6>
+            <div className='flex flex-col gap-2'>
+              {filters.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setSelectedFilter(option)}
+                  className={`w-full text-left px-2 py-2 rounded-xl transition-all flex items-center justify-between 
+                                    ${selectedFilter === option
+                      ? 'bg-gradient-to-r from-amber-200 to-green-100 border-2 border-amber-300'
+                      : 'hover:bg-amber-50 border-2 border-transparent'}`}
+                >
+                  <span className="text-green-800 xl:text-lg lg:text-[16px] md:text-xs">{option}</span>
+                  {selectedFilter === option &&
+                    <i className="fa-solid fa-check text-amber-600 ml-1" />}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Sorting Filters */}
-          <div className="flex flex-col gap-3">
-            <span className="text-md font-semibold text-gray-500">Sort By</span>
-            {filters.map((option) => (
-              <button
-                key={option}
-                onClick={() => setSelectedFilter(option)}
-                className={`text-left px-3 py-2 rounded-lg transition-colors ${selectedFilter === option ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200'
-                  }`}
-              >
-                <label className='lg:text-md md:text-xs'>{option}</label>
-                {selectedFilter === option && <span className="ml-1 text-blue-500">✓</span>}
-              </button>
-            ))}
-          </div>
+          {selectedFilter && (
+            <button
+              onClick={() => setSelectedFilter(null)}
+              className="mt-4 w-full py-2 text-sm bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors flex items-center justify-center gap-2"
+            >
+              <i className="fa-solid fa-xmark" />
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
 
       {/* Main Content - Scrollable Product List */}
-      <div className="flex flex-col flex-grow xl:w-4/5 md:w-3/4 w-full h-full pt-3 xl:px-20 lg:px-15 md:px-10 sm:px-15 px-3 gap-3">
-        <div className="flex flex-col gap-2">
-          <div className='flex justify-between items-center relative'>
-            <span className="text-2xl font-bold text-gray-800">Fruits</span>
-            <span className={`flex md:hidden text-xl font-semibold text-gray-400 ${filterButton ? "bg-zinc-200 hover:bg-zinc-300" : "hover:bg-zinc-200"} p-1 rounded-md cursor-pointer`} onClick={handleFilterClick}>Filters</span>
-            <div className={`${filterButton ? "flex md:hidden" : "hidden"} absolute top-13 right-0 sm:w-1/2 w-full bg-gradient-to-r from-black/90 to-black/80 rounded-md px-3 py-4 text-white z-90`}>
-              <div className="flex flex-col gap-3 w-full">
-                <div className='flex w-full justify-between items-center'>
-                  <span className="text-md font-semibold text-gray-500">Sort By</span>
-                  <button
-                    onClick={() => {
-                      handleFilterClick();
-                      setSelectedFilter(null);
-                    }}
-                    className={`${selectedFilter ? 'flex' : 'hidden'} px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
-                  >
-                    Clear all
-                  </button>
-                </div>
-                {filters.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => {
-                      handleFilterClick();
-                      setSelectedFilter(option);
-                    }}
-                    className={`text-left px-3 py-2 rounded-lg transition-colors ${selectedFilter === option ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-500'
-                      }`}
-                  >
-                    <label className='lg:text-md md:text-xs'>{option}</label>
-                    {selectedFilter === option && <span className="ml-1 text-blue-500">✓</span>}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            {selectedFilter && (
-              <>
-                <span>Sorted by:</span>
-                <span className="font-medium text-blue-400">{selectedFilter}</span>
-              </>
-            )}
-          </div>
+      <div className="flex-1 pt-6 px-6">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="sm:text-3xl text-xl font-bold text-green-800">
+            Fresh Fruits Collection
+            <i className="fa-solid fa-leaf text-amber-600 sm:ml-3 ml-1" />
+          </span>
+
+          {/* Mobile Filters Button */}
+          <button
+            onClick={handleFilterClick}
+            className="md:hidden p-2 bg-white rounded-xl shadow-md hover:bg-amber-50 border-2 border-amber-100"
+          >
+            <i className="fa-solid fa-sliders text-amber-600" />
+          </button>
         </div>
 
+        {/* Mobile Filters Dropdown */}
+        {filterButton && (
+          <div className="lg:hidden mb-6 bg-white rounded-xl shadow-lg p-4 border-2 border-amber-100">
+            <div className="flex flex-col gap-4">
+              <div className='flex w-full justify-between items-center'>
+                <h4 className="sm:text-lg text-md font-semibold text-amber-700">Sort By</h4>
+                {selectedFilter && (
+                  <button
+                    onClick={() => {
+                      handleFilterClick();
+                      setSelectedFilter(null)
+                    }}
+                    className="w-max py-1 px-3 text-sm bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <i className="fa-solid fa-xmark" />
+                    Clear Filters
+                  </button>
+                )}
+              </div>
+              {filters.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    handleFilterClick();
+                    setSelectedFilter(option);
+                  }}
+                  className={`text-left px-4 py-2 rounded-lg transition-colors 
+                                        ${selectedFilter === option
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'hover:bg-amber-50'}`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Product List - Scrollable */}
-        <div className="flex-grow overflow-y-auto h-100lvh] hide-scrollbar shadow-inner rounded-xl">
+        <div className="flex-grow overflow-y-auto [height:calc(100dvh-100px)] hide-scrollbar shadow-inner rounded-xl p-3">
           <ProductList allProducts={sortedProducts} />
         </div>
       </div>

@@ -1,12 +1,24 @@
-/* @import "tailwindcss"; */
+.tooltip {
+  position: relative;
+}
 
-/* @theme {
-    --breakpoint-xss: 20rem;
-    --breakpoint-xs: 30rem;
-    --breakpoint-sm: 40rem;
-    --breakpoint-md: 48rem;
-    --breakpoint-lg: 64rem;
-    --breakpoint-xl: 80rem;
-    --breakpoint-2xl: 96rem;
-    --breakpoint-3xl: 120rem;
-  } */
+.tooltip::before {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.tooltip:hover::before {
+  opacity: 1;
+}

@@ -65,25 +65,30 @@ function ProductList({ allProducts }) {
     }, [])
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:px-4 w-full">
             <ToastContainer position="top-right" />
-            
+
             {allProducts.map((item, index) => (
                 <div
                     key={index}
-                    className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow relative hover:!scale-105 duration-300 overflow-hidden"
+                    className="group w-full md:h-[70vh] sm:h-[70vh] h-[73vh] bg-gradient-to-br from-amber-50 via-yellow-50 to-green-50 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 relative border-2 border-amber-100"
                 >
-                    {/* Discount Badge */}
-                    {item.discountPercentage > 0 && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
-                            {item.discountPercentage}% OFF
-                        </div>
-                    )}
+                    {/* Discount & Origin Badges */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                        {item.discountPercentage > 0 && (
+                            <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                                {item.discountPercentage}% OFF
+                            </div>
+                        )}
+                        {item.origin === "imported" && (
+                            <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                                <i className="fa-solid fa-globe mr-1" /> Imported
+                            </div>
+                        )}
+                    </div>
 
                     {/* Product Image */}
-                    <div
-                        className="relative aspect-square overflow-hidden cursor-pointer"
-                        onClick={() => handleClick(item)}
+                    <div className="w-full h-[38vh] relative aspect-square overflow-hidden cursor-pointer" onClick={() => handleClick(item)}
                         onMouseEnter={() => {
                             if (item.images?.length > 1) {
                                 if (intervalRefs.current[item._id]) {
@@ -114,51 +119,52 @@ function ProductList({ allProducts }) {
                         <img
                             src={item.images[currentImageIndex[item._id] || 0]}
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-[38vh] object-cover group-hover:scale-105 transition-transform duration-300"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     </div>
 
                     {/* Product Content */}
-                    <div className="p-3">
-                        {/* Imported Badge */}
-                        {item.origin === "imported" && (
-                            <div className="text-xs font-medium mb-1 rounded-md py-1 px-2 bg-gradient-to-r from-blue-300 via-blue-600 to-blue-400 text-white w-min">
-                                Imported
-                            </div>
-                        )}
-
+                    <div className="px-3 py-2 bg-white/90">
                         {/* Product Title */}
-                        <h3 className="font-semibold sm:text-xl text-md text-gray-800 mb-1">
+                        <span className="font-bold text-lg text-green-800 mb-1">
                             {item.name}
-                        </h3>
+                            <span className="block text-sm font-normal text-amber-600 mb-2">{item.category}</span>
+                        </span>
 
                         {/* Tags */}
-                        <div className="flex flex-wrap gap-1 text-xs text-gray-500 mb-2">
-                            {item.tags?.map((tag, i) => (
-                                <span key={i} className="lowercase">
-                                    {tag}{i !== item.tags.length - 1 && ' | '}
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {item.tags?.slice(0, 4).map((tag, i) => (
+                                <span key={i} className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+                                    #{tag}
                                 </span>
                             ))}
                         </div>
 
-                        {/* Stock */}
-                        <div className="text-xs text-gray-900 mb-2">
-                            Stock Available : <span className='text-black text-xs font-bold'>{item.stockQuantity}</span>
+                        {/* Stock & Weight */}
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="text-xs font-medium text-green-700">
+                                <i className="fa-solid fa-box-open mr-2" />
+                                {item.stockQuantity} in stock
+                            </div>
+                            <span className="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                                <i className="fa-solid fa-weight-hanging mr-2" />
+                                {item.variants[0].weight}{item.variants[0].unit}
+                            </span>
                         </div>
 
                         {/* Price */}
-                        <div className="flex items-center gap-4 mb-1">
-                            <p className="text-2xl font-bold text-gray-900 pt-3">
-                                ${item.variants[0].price}
-                                {item.variants[0].originalPrice && (
-                                    <span className="ml-3 text-sm text-red-500 line-through">
-                                        ${item.variants[0].originalPrice + 2}
-                                    </span>
-                                )}
-                            </p>
-                            <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
-                                {item.variants[0].weight} {item.variants[0].unit}
-                            </span>
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <p className="text-xl font-bold text-green-700">
+                                    ${item.variants[0].price}
+                                    {item.variants[0].originalPrice && (
+                                        <span className="ml-2 text-base text-red-500 line-through">
+                                            ${item.variants[0].originalPrice}
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -194,14 +200,14 @@ function ProductList({ allProducts }) {
                                     e.stopPropagation();
                                 }}
                             >
-                                <div 
+                                <div
                                     className='flex p-2 bg-green-300 text-white rounded-full items-center justify-center cursor-pointer shadow-2xl'
                                     onClick={() => handleWishListClick(item)}
                                 >
-                                    <i className={`fa-${userWishList.some((data) => data._id === item._id) ? "solid" :  "regular"} fa-heart`} style={{color: "#010813",}}/>
+                                    <i className={`fa-${userWishList.some((data) => data._id === item._id) ? "solid" : "regular"} fa-heart`} style={{ color: "#010813", }} />
                                 </div>
-                                <div 
-                                    onClick={ () => handleCartClick(item)}
+                                <div
+                                    onClick={() => handleCartClick(item)}
                                     className={`flex p-2 bg-green-300 ${userCart.some(data => data._id === item._id) ? "" : "text-white"} rounded-full items-center justify-center cursor-pointer shadow-2xl`}
                                 >
                                     <i className="fa-solid fa-cart-shopping"></i>
