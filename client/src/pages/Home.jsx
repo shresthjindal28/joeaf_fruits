@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { motion } from "framer-motion";
 import { FadeLeft, FadeRight } from '../utility/animation';
 import { selectUserInfo } from '../redux/slices/UserInfoSlice';
-import { addProductToWishList, getAllProducts, getUserWishList, removeProductFromWishList, selectAllProducts, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice'
+import { addProductToCart, addProductToWishList, getAllProducts, getUserCartList, getUserWishList, removeProductFromCart, removeProductFromWishList, selectAllProducts, selectCartList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice'
 
 function Home() {
     const timerRef = useRef(null)
@@ -16,6 +16,7 @@ function Home() {
     const [imgNumber, setImgNumber] = useState(1);
 
     const userInfo = useSelector(selectUserInfo);
+    const userCart = useSelector(selectCartList);
     const userWishList = useSelector(selectWishList);
     const allProducts = useSelector(selectAllProducts);
 
@@ -67,7 +68,7 @@ function Home() {
             return;
         }
 
-        const isInList = userWishList.some((e) => e === item._id);
+        const isInList = userWishList.some((e) => e._id === item._id);
 
         if (!isInList) {
             dispatch(addProductToWishList({ productId: item._id }));
@@ -77,20 +78,38 @@ function Home() {
         }
     }
 
+    // Function to handle the add to cart button
+    const handleAddToCart = async (item) => {
+        if (!userInfo) {
+            toast.error("Please log in first!", { autoClose: 3000 });
+            return;
+        }
+
+        const isInList = userCart.some((e) => e._id === item._id);
+
+        if (!isInList) {
+            dispatch(addProductToCart({ productId: item._id }));
+        }
+        else {
+            dispatch(removeProductFromCart({ productId: item._id }));
+        }
+    }
+
     useEffect(() => {
         dispatch(getAllProducts())
     }, [])
 
     useEffect(() => {
-        if (userInfo) {
+        if (userInfo?.role !== "Admin") {
             dispatch(getUserWishList());
+            dispatch(getUserCartList());
         }
     }, [userInfo])
 
     return (
         <div className='flex flex-col w-full h-full overflow-y-scroll hide-scrollbar'>
             <ToastContainer position="top-right" />
-            
+
             <div className='flex flex-col gap-20 w-full h-full'>
 
                 <div className="flex w-full min-h-[650px] bg-[url('/images/home/bg.jpg')] bg-cover lg:bg-[length:100%_auto] bg-center bg-no-repeat brightness-80">
@@ -174,59 +193,105 @@ function Home() {
                 {/*Fruits Section */}
                 <div className='flex flex-grow flex-col gap-2 w-full h-full'>
                     <div className='flex font-bold text-2xl pl-5 mb-4'>Organic Products</div>
-                    <div className="grid gap-4 lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 px-5">
-                        {allProducts.slice(0, 6).map((item, index) => (
-                            <motion.div
-                                key={index}
-                                whileHover={{ scale: 1.03 }}
-                                className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-                            >
-                                {/* Product Image */}
-                                <div className="relative aspect-square bg-gray-100 overflow-hidden">
-                                    <img
-                                        src={item.images[0]}
-                                        alt={item.name}
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                    />
+                    <div className='flex px-5 w-full h-full'>
+                        <div className="grid gap-4 xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:px-10 lg:px-20 md:px-10 sm:px-5">
+                            {allProducts.slice(0, 6).map((item, index) => (
+                                <motion.div
+                                    key={index}
+                                    whileHover={{ scale: 1.03 }}
+                                    className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                                >
+                                    {/* Product Image */}
+                                    <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                                        <img
+                                            src={item.images[0]}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        />
 
-                                    {/* Hover Buttons (Appear from Bottom) */}
-                                    <div
-                                        className="flex justify-center absolute top-0 left-0 right-0 bg-gradient-to-t from-transparent via-white/10 to-white/30 pt-4 px-3 transform transition-all duration-300 translate-y-[-80px] group-hover:translate-y-0"
-                                    >
-                                        <div className='flex items-center w-min justify-between gap-4 px-3 py-1 rounded-2xl bg-white/70'>
-                                            <button
-                                                onClick={handleWishListClick}
-                                                className="hover:bg-white/50 rouned-full p-1"
-                                            >
-                                                <i className={`fa-${userWishList.some((e) => e === item._id) ? "solid" : "regular"} fa-heart fa-lg`} />
-                                            </button>
-                                            <button className="hover:bg-white/50 rouned-full p-1">
-                                                {/* 🛒 */}
-                                                <i className="fa-solid fa-cart-shopping" style={{ color: "#01060e", }} />
-                                            </button>
-                                            <button className="hover:bg-white/50 rouned-full p-1" onClick={() => (handleFruitClick(item))}>
-                                                <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
-                                            </button>
+                                        {/* Hover Buttons (Appear from Bottom) */}
+                                        <div
+                                            className="flex justify-center absolute top-0 left-0 right-0 bg-gradient-to-t from-transparent via-white/10 to-white/30 pt-4 px-3 transform transition-all duration-300 translate-y-[-80px] group-hover:translate-y-0"
+                                        >
+                                            <div className='flex items-center w-min justify-between gap-4 px-3 py-1 rounded-2xl bg-white/70'>
+                                                {
+                                                    userInfo?.role === "Admin" ? (
+                                                        <>
+                                                            <button
+                                                                onClick={() => {
+                                                                    dispatch(setSingleProduct(item));
+                                                                    navigate(`/product/${item._id}/update`);
+                                                                }}
+                                                                className="hover:bg-white/50 rouned-full p-1"
+                                                            >
+                                                                <i className="fa-solid fa-pen-to-square fa-bounce" />
+                                                            </button>
+                                                        </>
+                                                    )
+                                                        :
+                                                        (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleWishListClick(item)}
+                                                                    className="hover:bg-white/50 rouned-full p-1"
+                                                                >
+                                                                    <i className={`fa-${userWishList.some((e) => e._id === item._id) ? "solid" : "regular"} fa-heart fa-lg`} />
+                                                                </button>
+                                                                <button 
+                                                                    onClick={ () => handleAddToCart(item)}
+                                                                    className="hover:bg-white/50 rouned-full p-1 font-bold text-black"
+                                                                >
+                                                                    {
+                                                                        userCart.some((e) => e._id === item._id) ? (
+                                                                            <i className={`fa-solid fa-cart-shopping`} style={{ color: "#01060e", }} />
+                                                                        )
+                                                                            : (
+                                                                                <span className="text-black">🛒</span>
+                                                                            )
+                                                                    }
+                                                                </button>
+                                                            </>
+                                                        )
+                                                }
+                                                <button className="hover:bg-white/50 rouned-full p-1" onClick={() => (handleFruitClick(item))}>
+                                                    <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Product Info */}
-                                <div className="p-3 text-center">
-                                    <p className="text-lg font-semibold text-gray-800 mb-1">{item.name}</p>
-                                </div>
-                            </motion.div>
-                        ))}
+                                    {/* Product Info */}
+                                    <div className="px-3 pt-3 h-16 text-center">
+                                        <p className="text-lg font-semibold text-gray-800 mb-1">{item.name}</p>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div className="flex px-3 justify-between items-center mb-1">
+                                        <span className="text-sm px-2 py-1 rounded bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 text-white">
+                                            {item.variants[0].weight} {item.variants[0].unit}
+                                        </span>
+                                        <p className="text-lg font-bold text-gray-900 pt-3">
+                                            ${item.variants[0].price}
+                                            {item.variants[0].originalPrice && (
+                                                <span className="ml-3 text-sm text-red-500 line-through">
+                                                    ${item.variants[0].originalPrice + 2}
+                                                </span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
                 <div className="flex w-full sm:justify-end justify-center lg:px-25 md:px-20 sm:px-15 pb-10">
                     <div
-                        className='flex w-max px-10 rounded-md border-black border-2 items-center py-2 gap-4 sm:text-xl text-lg font-bold cursor-pointer bg-gradient-to-r from-gray-400 hover:black/50 hover:to-black/80 hover:text-white shadow-[0px_10px_14px_-7px_#777373] hover:!scale-108 duration-300'
+                        className='flex w-max px-10 rounded-md items-center py-2 gap-4 md:text-xl sm:text-lg text-md font-bold cursor-pointer bg-gradient-to-r from-yellow-100 via-black/10 to-amber-100 hover:amber-100 hover:via-yellow hover:to-black/10 shadow-[0px_10px_14px_-7px_#777373] hover:!scale-108 duration-300'
                         onClick={() => navigate('allproducts')}
                     >
                         Explore More.....
-                        <i className="fa-solid fa-angles-right fa-2xl" />
+                        <i className="fa-solid fa-angles-right xl:fa-2xl lg:fa-xl sm:fa-lg fa-md" />
                     </div>
                 </div>
             </div>

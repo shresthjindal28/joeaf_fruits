@@ -6,6 +6,7 @@ const intialState = {
     singleProduct: null,
     newProduct: null,
     wishList: [],
+    cartList: [],
     error: null
 }
 
@@ -129,6 +130,58 @@ export const removeProductFromWishList = createAsyncThunk(
     }
 )
 
+export const addProductToCart = createAsyncThunk(
+    "Adding product to the cart",
+    async (payload, { getState, rejectWithValue }) => {
+        const state = getState();
+        const token = state.userInfo.userToken;
+        if (!token) return rejectWithValue("Token is missing");
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/product/${payload.productId}/addcart`, payload,
+                {
+                    headers: {
+                        'Content-Type': "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            )
+            const result = await response.data;
+
+            return result.success === true ? result.list.cart : null;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+export const removeProductFromCart = createAsyncThunk(
+    "Removing product from the cart",
+    async (payload, { getState, rejectWithValue }) => {
+        const state = getState();
+        const token = state.userInfo.userToken;
+        if (!token) return rejectWithValue("Token is missing");
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/product/${payload.productId}/removecart`, payload,
+                {
+                    headers: {
+                        'Content-Type': "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            )
+            const result = await response.data;
+
+            return result.success === true ? result.list.cart : null;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
 export const getUserWishList = createAsyncThunk(
     'Getting user wishList',
     async(_, {getState, rejectWithValue}) => {
@@ -149,7 +202,34 @@ export const getUserWishList = createAsyncThunk(
             )
             const result = await response.data;
 
-            return result.success === true ? result.list.wishList : null;
+            return result.success === true ? result.wishlist : null;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+)
+
+export const getUserCartList = createAsyncThunk(
+    'Getting user cart list items',
+    async(_, {getState, rejectWithValue}) => {
+        const state = getState();
+        const token = state.userInfo.userToken;
+        const userInfo = state.userInfo.userInfo;
+        if (!token) return rejectWithValue("Token is missing");
+
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/user/${userInfo._id}/cart`,
+                {
+                    headers: {
+                        'Content-Type': "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            )
+            const result = await response.data;
+
+            return result.success === true ? result.cartlist : null;
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
@@ -237,6 +317,36 @@ export const ProductSlice = createSlice({
             .addCase(getUserWishList.rejected, (state, action) => {
                 state.error = action.payload
             })
+            .addCase(addProductToCart.pending, (state) => {
+                state.error = null
+            })
+            .addCase(addProductToCart.fulfilled, (state, action) => {
+                state.cartList = action.payload
+                state.error = null
+            })
+            .addCase(addProductToCart.rejected, (state, action) => {
+                state.error = action.payload
+            })
+            .addCase(removeProductFromCart.pending, (state) => {
+                state.error = null
+            })
+            .addCase(removeProductFromCart.fulfilled, (state, action) => {
+                state.cartList = action.payload
+                state.error = null
+            })
+            .addCase(removeProductFromCart.rejected, (state, action) => {
+                state.error = action.payload
+            })
+            .addCase(getUserCartList.pending, (state) => {
+                state.error = null
+            })
+            .addCase(getUserCartList.fulfilled, (state, action) => {
+                state.cartList = action.payload
+                state.error = null
+            })
+            .addCase(getUserCartList.rejected, (state, action) => {
+                state.error = action.payload
+            })
     }
 })
 
@@ -244,6 +354,7 @@ export const selectProductError = (state) => state.productData.error;
 export const selectNewProduct = (state) => state.productData.newProduct;
 export const selectAllProducts = (state) => state.productData.allProducts;
 export const selectWishList = (state) => state.productData.wishList;
+export const selectCartList = (state) => state.productData.cartList;
 export const selectSingleProduct = (state) => state.productData.singleProduct;
 
 export const { resetNewProduct, resetSingleProduct, setSingleProduct } = ProductSlice.actions;

@@ -37,7 +37,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<any> =
             return res.status(403).json({ success: false, message: "Unauthorized Access!" });
         }
 
-        const product  = req.body;
+        const product = req.body;
         const updatedProduct = await Product.findByIdAndUpdate(product._id, product, { new: true });
 
         return res.status(200).json({ success: true, product: updatedProduct });
@@ -53,7 +53,7 @@ export const deleteProduct = async (req: Request, res: Response): Promise<any> =
             return res.status(403).json({ success: false, message: "Unauthorized Access!" });
         }
 
-        const {id}  = req.params;
+        const { id } = req.params;
         const product = await Product.findByIdAndDelete(id);
         return res.status(200).json({ success: true, message: "Product Deleted Successfully" });
     } catch (error) {
@@ -76,10 +76,16 @@ export const addProductToWishlist = async (req: Request, res: Response): Promise
         }
 
         const userUpdatedList = await User.findByIdAndUpdate(
-            userId, 
-            { $addToSet: { wishList: id } }, 
+            userId,
+            { $addToSet: { wishList: id } },
             { new: true }
-        ).select('wishList');
+        )
+            .select('wishList')
+            .populate({
+                path: 'wishList',
+                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                model: 'Product'
+            });
 
         return res.status(200).json({ success: true, message: "Product Added to Wishlist Successfully", list: userUpdatedList });
     } catch (error: any) {
@@ -102,10 +108,80 @@ export const removeProductToWishlist = async (req: Request, res: Response): Prom
         }
 
         const userUpdatedList = await User.findByIdAndUpdate(
-            userId, 
-            { $pull: { wishList: id } }, 
+            userId,
+            { $pull: { wishList: id } },
             { new: true }
-        ).select('wishList');
+        )
+            .select('wishList')
+            .populate({
+                path: 'wishList',
+                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                model: 'Product'
+            });
+
+        return res.status(200).json({ success: true, message: "Product From the Wishlist Successfully", list: userUpdatedList });
+    } catch (error: any) {
+        return res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+    }
+};
+
+export const addProductToCart = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { userId, role } = (req as any).user;
+        if (role === "Admin") {
+            return res.status(403).json({ success: false, message: "UnNamed Action" });
+        }
+
+        const { id } = req.params;
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product Not Found" });
+        }
+
+        const userUpdatedList = await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { cart: id } },
+            { new: true }
+        )
+            .select('cart')
+            .populate({
+                path: 'cart',
+                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                model: 'Product'
+            });
+
+        return res.status(200).json({ success: true, message: "Product Added to Wishlist Successfully", list: userUpdatedList });
+    } catch (error: any) {
+        return res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+    }
+};
+
+export const removeProductToCart = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { userId, role } = (req as any).user;
+        if (role === "Admin") {
+            return res.status(403).json({ success: false, message: "UnNamed Action" });
+        }
+
+        const { id } = req.params;
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product Not Found" });
+        }
+
+        const userUpdatedList = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { cart: id } },
+            { new: true }
+        )
+            .select('cart')
+            .populate({
+                path: 'cart',
+                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                model: 'Product'
+            });
 
         return res.status(200).json({ success: true, message: "Product From the Wishlist Successfully", list: userUpdatedList });
     } catch (error: any) {

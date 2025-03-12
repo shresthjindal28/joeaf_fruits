@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux'
-import { addProductToWishList, removeProductFromWishList, selectSingleProduct, selectWishList } from '../redux/slices/ProductDataSlice'
+import { addProductToCart, addProductToWishList, removeProductFromCart, removeProductFromWishList, selectCartList, selectSingleProduct, selectWishList } from '../redux/slices/ProductDataSlice'
 import { selectUserInfo, selectUserToken } from '../redux/slices/UserInfoSlice';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,8 +12,10 @@ function SingleProduct() {
   const userInfo = useSelector(selectUserInfo);
   const userToken = useSelector(selectUserToken);
   const userWishList = useSelector(selectWishList);
+  const userCart = useSelector(selectCartList);
   const singleProduct = useSelector(selectSingleProduct);
   const [inList, setInList] = useState(false);
+  const [inCart, setInCart] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
@@ -69,16 +71,23 @@ function SingleProduct() {
     }
   }
 
-  // Function to add a product to the wishlist
-  const handleBuy = async () => {
+  // Function to add a product to the cart
+  const handleAddToCart = async () => {
     if (!userInfo) {
       toast.error("Please log in first!", { autoClose: 3000 });
       return;
     }
+
+    if (!inCart) {
+      dispatch(addProductToCart({ productId: singleProduct._id }));
+    }
+    else {
+      dispatch(removeProductFromCart({ productId: singleProduct._id }));
+    }
   }
 
   useEffect(() => {
-    const isInList = userWishList.some((item) => item === singleProduct._id);
+    const isInList = userWishList.some((item) => item._id === singleProduct._id);
     if (isInList) {
       setInList(true);
     }
@@ -86,6 +95,16 @@ function SingleProduct() {
       setInList(false);
     }
   }, [userWishList])
+
+  useEffect(() => {
+    const isInList = userCart.some((item) => item._id === singleProduct._id);
+    if (isInList) {
+      setInCart(true);
+    }
+    else {
+      setInCart(false);
+    }
+  }, [userCart])
 
   if (!singleProduct) {
     navigate('/');
@@ -222,9 +241,10 @@ function SingleProduct() {
                     {inList ? 'Remove from Wishlist' : 'Add to Wishlist'}
                   </button>
                   <button
-                    className="w-full py-3 px-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className={`w-full py-3 px-6 ${ inCart ? "bg-green-300 text-white hover:bg-green-400" : "bg-green-600 text-white hover:bg-green-700"} rounded-lg transition-colors`}
+                    onClick={handleAddToCart}
                   >
-                    Add to Cart
+                    { inCart ? "Remove from Cart" : "Add to Cart" }
                   </button>
                 </div>
               )}

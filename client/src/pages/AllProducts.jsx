@@ -11,20 +11,26 @@ function AllProducts() {
   const [selectedFilter, setSelectedFilter] = useState(null);
 
   const getSortedProducts = () => {
-    if (!selectedFilter) return products;
+    if (!selectedFilter || !products || products.length === 0) return products;
 
-    switch (selectedFilter) {
-      case 'Alphabetical':
-        return [...products].sort((a, b) => a.name.localeCompare(b.name));
-      case 'Price (Low to High)':
-        return [...products].sort((a, b) => a.price - b.price);
-      case 'Price (High to Low)':
-        return [...products].sort((a, b) => b.price - a.price);
-      case 'Discount (High to Low)':
-        return [...products].sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0));
-      default:
-        return products;
-    }
+    return [...products].sort((a, b) => {
+      switch (selectedFilter) {
+        case 'Alphabetical':
+          return a.name.localeCompare(b.name);
+
+        case 'Price (Low to High)':
+          return (a.variants[0]?.price ?? 0) - (b.variants[0]?.price ?? 0);
+
+        case 'Price (High to Low)':
+          return (b.variants[0]?.price ?? 0) - (a.variants[0]?.price ?? 0);
+
+        case 'Discount (High to Low)':
+          return (b.discountPercentage ?? 0) - (a.discountPercentage ?? 0);
+
+        default:
+          return 0;
+      }
+    });
   };
 
   const sortedProducts = getSortedProducts();
@@ -33,16 +39,16 @@ function AllProducts() {
     setFilterButton(!filterButton);
   }
 
-  useEffect( () => {
+  useEffect(() => {
     dispatch(getAllProducts());
   }, [])
 
   if (!products || !Array.isArray(products)) {
     return <div className='flex flex-grow w-full h-full justify-center items-center'>No products available</div>;
-}
+  }
 
   return (
-    <div className="flex w-full h-screen bg-zinc-100">
+    <div className="flex w-full h-screen pb-10">
       {/* Filters Section - Sticky */}
       <div className="md:flex hidden xl:w-1/5 w-1/4 h-full py-4 lg:pl-15 md:pl-5 sticky top-0 overflow-y-auto">
         <div className="flex flex-col gap-5 w-full">
@@ -75,8 +81,8 @@ function AllProducts() {
       </div>
 
       {/* Main Content - Scrollable Product List */}
-      <div className="flex flex-col flex-grow xl:w-4/5 md:w-3/4 w-full h-full py-4 xl:px-20 lg:px-15 md:px-10 sm:px-15 px-10 gap-3">
-        <div className="flex flex-col gap-3">
+      <div className="flex flex-col flex-grow xl:w-4/5 md:w-3/4 w-full h-full pt-3 xl:px-20 lg:px-15 md:px-10 sm:px-15 px-3 gap-3">
+        <div className="flex flex-col gap-2">
           <div className='flex justify-between items-center relative'>
             <span className="text-2xl font-bold text-gray-800">Fruits</span>
             <span className={`flex md:hidden text-xl font-semibold text-gray-400 ${filterButton ? "bg-zinc-200 hover:bg-zinc-300" : "hover:bg-zinc-200"} p-1 rounded-md cursor-pointer`} onClick={handleFilterClick}>Filters</span>
@@ -122,7 +128,7 @@ function AllProducts() {
         </div>
 
         {/* Product List - Scrollable */}
-        <div className="flex-grow overflow-y-auto h-[calc(100vh-200px)] hide-scrollbar shadow-inner rounded-xl">
+        <div className="flex-grow overflow-y-auto h-100lvh] hide-scrollbar shadow-inner rounded-xl">
           <ProductList allProducts={sortedProducts} />
         </div>
       </div>

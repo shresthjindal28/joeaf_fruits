@@ -22,13 +22,13 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<any> 
         const { userId, role } = (req as any).user;
         const userid = req.params.id;
 
-        const {firstName, lastName, email, phone, photo, gender, dateOfBirth} = req.body;
+        const { firstName, lastName, email, phone, photo, gender, dateOfBirth } = req.body;
         if (userId != userid) {
             return res.status(403).json({ message: 'Unauthorized Access!' });
         }
 
-        const updatedUser = await User.findByIdAndUpdate( 
-            userid, 
+        const updatedUser = await User.findByIdAndUpdate(
+            userid,
             {
                 firstName,
                 lastName,
@@ -36,8 +36,8 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<any> 
                 phone,
                 photo,
                 gender
-            }, 
-            {new: true }
+            },
+            { new: true }
         );
 
         if (!updatedUser) {
@@ -52,11 +52,42 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<any> 
 
 export const getUserWishList = async (req: Request, res: Response): Promise<any> => {
     try {
-        const {userId} = (req as any).user;
-        const wishList = await User.findById(userId).select('wishList');
+        const { userId } = (req as any).user;
+        const user = await User.findById(userId)
+            .select('wishList')
+            .populate({
+                path: 'wishList',
+                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                model: 'Product'
+            });
 
-        return res.status(200).json({ success: true, list: wishList});
-    } catch (error: any) {
-        return res.status(500).json({ success: false, message: error.message || "Server Error" });
+        res.json({
+            success: true,
+            wishlist: user?.wishList ? user.wishList : []
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
-}
+};
+
+export const getUserCartList = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { userId } = (req as any).user;
+        const user = await User.findById(userId)
+            .select('cart')
+            .populate({
+                path: 'cart',
+                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                model: 'Product'
+            });
+
+        res.json({
+            success: true,
+            cartlist: user?.cart ? user.cart : []
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};

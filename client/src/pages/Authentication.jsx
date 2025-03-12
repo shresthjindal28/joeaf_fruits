@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch, useSelector } from "react-redux";
-import { FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
-import { GetUserDetails, LoginRoute, RegisterRoute, selectAuthError, selectUserInfo, selectUserOnline, selectUserToken, userInfoReset } from "../redux/slices/UserInfoSlice";
+import { FaEye, FaEyeSlash, FaGoogle} from "react-icons/fa";
+import { GetUserDetails, LoginRoute, RegisterRoute, selectAuthError, selectUserOnline, selectUserToken, userInfoReset } from "../redux/slices/UserInfoSlice";
 
 const AuthPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const userInfo = useSelector(selectUserInfo);
     const userToken = useSelector(selectUserToken);
     const userOnline = useSelector(selectUserOnline);
     const err = useSelector(selectAuthError);
@@ -118,12 +117,14 @@ const AuthPage = () => {
     return (
         <div className="flex h-[92vh] w-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
             <ToastContainer position="top-right" />
+            
             {/* Loading Overlay */}
             {isLoading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                     <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
                 </div>
             )}
+            
             <div className="w-full h-full max-w-md bg-white rounded-xl shadow-lg p-8 overflow-y-scroll hide-scrollbar">
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -197,7 +198,7 @@ const AuthPage = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-3 text-gray-500 hover:text-indigo-600"
+                                className="absolute right-3 top-[35%] text-xl text-gray-500 hover:text-yellow-500"
                             >
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -244,7 +245,7 @@ const AuthPage = () => {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-amber-400 text-amber-900 py-3 px-4 rounded-lg font-bold hover:bg-amber-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
                     </button>
@@ -262,32 +263,23 @@ const AuthPage = () => {
                         </div>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-3">
+                    <div className="mt-6 flex justify-center gap-3">
                         <button
                             type="button"
-                            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="w-[60%] flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                         >
                             <FaGoogle className="h-5 w-5 text-gray-800" />
                             <span className="ml-2 text-sm font-medium text-gray-800">
                                 Google
                             </span>
                         </button>
-                        <button
-                            type="button"
-                            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            <FaGithub className="h-5 w-5 text-gray-800" />
-                            <span className="ml-2 text-sm font-medium text-gray-800">
-                                GitHub
-                            </span>
-                        </button>
                     </div>
 
-                    <p className="mt-8 text-center text-gray-600">
+                    <p className="pt-2 text-center text-gray-600">
                         {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
                         <button
                             onClick={() => setIsLogin(!isLogin)}
-                            className="text-indigo-600 hover:text-indigo-700 font-semibold"
+                            className="text-amber-600 hover:text-amber-700 font-semibold"
                         >
                             {isLogin ? "Sign up" : "Sign in"}
                         </button>

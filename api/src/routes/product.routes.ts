@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middlewares/authenticate';
-import { addNewProduct, addProductToWishlist, deleteProduct, getAllProducts, removeProductToWishlist, updateProduct } from '../controllers/product.controllers';
+import { addNewProduct, addProductToCart, addProductToWishlist, deleteProduct, getAllProducts, removeProductToCart, removeProductToWishlist, updateProduct } from '../controllers/product.controllers';
 
 const router = express.Router();
 
@@ -10,5 +10,7 @@ router.post('/:id/update', authenticate, updateProduct);
 router.delete('/:id/delete', authenticate, deleteProduct);
 router.post('/:id/addwishlist', authenticate, addProductToWishlist);
 router.post('/:id/removewishlist', authenticate, removeProductToWishlist);
+router.post('/:id/addcart', authenticate, addProductToCart);
+router.post('/:id/removecart', authenticate, removeProductToCart);
 
 export default router;

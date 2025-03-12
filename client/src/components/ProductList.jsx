@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { setSingleProduct } from '../redux/slices/ProductDataSlice'
+import { toast, ToastContainer } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { addProductToCart, addProductToWishList, removeProductFromCart, removeProductFromWishList, selectCartList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice'
 import { selectUserInfo } from '../redux/slices/UserInfoSlice';
 
 function ProductList({ allProducts }) {
@@ -9,6 +10,8 @@ function ProductList({ allProducts }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userInfo = useSelector(selectUserInfo);
+    const userCart = useSelector(selectCartList);
+    const userWishList = useSelector(selectWishList);
     const [currentImageIndex, setCurrentImageIndex] = useState({});
 
     const handleClick = (item) => {
@@ -21,6 +24,40 @@ function ProductList({ allProducts }) {
         navigate(`/product/${item._id}/update`);
     }
 
+    // Function to handle the wishlist button click
+    const handleWishListClick = async (data) => {
+        if (!userInfo) {
+            toast.error("Please log in first!", { autoClose: 3000 });
+            return;
+        }
+
+        const isInList = userWishList.some((item) => item._id === data._id);
+
+        if (!isInList) {
+            dispatch(addProductToWishList({ productId: data._id }));
+        }
+        else {
+            dispatch(removeProductFromWishList({ productId: data._id }));
+        }
+    }
+
+    // Function to handle the Cart button
+    const handleCartClick = async (data) => {
+        if (!userInfo) {
+            toast.error("Please log in first!", { autoClose: 3000 });
+            return;
+        }
+
+        const isInList = userCart.some((item) => item._id === data._id);
+
+        if (!isInList) {
+            dispatch(addProductToCart({ productId: data._id }));
+        }
+        else {
+            dispatch(removeProductFromCart({ productId: data._id }));
+        }
+    }
+
     useEffect(() => {
         return () => {
             Object.values(intervalRefs.current).forEach(clearInterval);
@@ -28,7 +65,9 @@ function ProductList({ allProducts }) {
     }, [])
 
     return (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 w-full">
+            <ToastContainer position="top-right" />
+            
             {allProducts.map((item, index) => (
                 <div
                     key={index}
@@ -82,23 +121,16 @@ function ProductList({ allProducts }) {
                     {/* Product Content */}
                     <div className="p-3">
                         {/* Imported Badge */}
-                        {item.imported && (
-                            <div className="text-xs text-blue-600 font-medium mb-1">
+                        {item.origin === "imported" && (
+                            <div className="text-xs font-medium mb-1 rounded-md py-1 px-2 bg-gradient-to-r from-blue-300 via-blue-600 to-blue-400 text-white w-min">
                                 Imported
                             </div>
                         )}
 
                         {/* Product Title */}
-                        <h3 className="font-semibold text-gray-800 mb-1">
+                        <h3 className="font-semibold sm:text-xl text-md text-gray-800 mb-1">
                             {item.name}
                         </h3>
-
-                        {/* Product Variant */}
-                        {item.variety && (
-                            <div className="text-xs text-gray-500 mb-2 [&_span]:mx-1">
-                                <span className="font-medium">[{item.variety}]</span>
-                            </div>
-                        )}
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1 text-xs text-gray-500 mb-2">
@@ -109,29 +141,24 @@ function ProductList({ allProducts }) {
                             ))}
                         </div>
 
-                        {/* Weight */}
-                        <div className="text-xs text-gray-500 mb-2">
-                            {item.quantity} kgs
+                        {/* Stock */}
+                        <div className="text-xs text-gray-900 mb-2">
+                            Stock Available : <span className='text-black text-xs font-bold'>{item.stockQuantity}</span>
                         </div>
 
-                        {/* Price Section */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                {item.originalPrice ? (
-                                    <>
-                                        <span className="text-red-500 font-bold text-lg">
-                                            ${Math.round(item.price).toLocaleString()}
-                                        </span>
-                                        <span className="text-gray-400 text-sm line-through">
-                                            ${Math.round(item.originalPrice).toLocaleString()}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span className="text-gray-800 font-bold text-lg">
-                                        ¥{Math.round(item.price).toLocaleString()}
+                        {/* Price */}
+                        <div className="flex items-center gap-4 mb-1">
+                            <p className="text-2xl font-bold text-gray-900 pt-3">
+                                ${item.variants[0].price}
+                                {item.variants[0].originalPrice && (
+                                    <span className="ml-3 text-sm text-red-500 line-through">
+                                        ${item.variants[0].originalPrice + 2}
                                     </span>
                                 )}
-                            </div>
+                            </p>
+                            <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
+                                {item.variants[0].weight} {item.variants[0].unit}
+                            </span>
                         </div>
                     </div>
 
@@ -167,17 +194,18 @@ function ProductList({ allProducts }) {
                                     e.stopPropagation();
                                 }}
                             >
-                                <div className='flex p-2 bg-green-300 text-white rounded-full items-center justify-center cursor-pointer shadow-2xl'>
-                                    <i className="fa-solid fa-heart"></i>
+                                <div 
+                                    className='flex p-2 bg-green-300 text-white rounded-full items-center justify-center cursor-pointer shadow-2xl'
+                                    onClick={() => handleWishListClick(item)}
+                                >
+                                    <i className={`fa-${userWishList.some((data) => data._id === item._id) ? "solid" :  "regular"} fa-heart`} style={{color: "#010813",}}/>
                                 </div>
-                                <div className='flex p-2 bg-green-300 text-white rounded-full items-center justify-center cursor-pointer shadow-2xl'>
+                                <div 
+                                    onClick={ () => handleCartClick(item)}
+                                    className={`flex p-2 bg-green-300 ${userCart.some(data => data._id === item._id) ? "" : "text-white"} rounded-full items-center justify-center cursor-pointer shadow-2xl`}
+                                >
                                     <i className="fa-solid fa-cart-shopping"></i>
                                 </div>
-                                {/* <button
-                                    className="w-max px-3 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700 transition-colors"
-                                >
-                                    Add to Cart
-                                </button> */}
                             </div>
                         )}
                     </div>
