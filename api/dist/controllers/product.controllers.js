@@ -23,7 +23,7 @@ const addNewProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity } = req.body;
         const product = yield Product_1.default.create({
-            name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
+            name, slug, description, variants, category, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
         });
         return res.status(201).json({ success: true, product });
     }

@@ -7,8 +7,9 @@ const productSchema = new mongoose_1.Schema({
     description: { type: String, required: true },
     category: {
         type: String,
-        enum: ['fresh', 'organic', 'exotic', 'berries'],
+        enum: ['mango', 'premium mango'],
         required: true,
+        default: 'mango'
     },
     variants: [
         {

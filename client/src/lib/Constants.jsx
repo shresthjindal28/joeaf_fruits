@@ -1,5 +1,5 @@
 export const filters = [
-    "Alphabetical", "Price (Low to High)", "Price (High to Low)", "Discount (High to Low)", "Popularity"
+    "Price (Low to High)", "Price (High to Low)", "Discount (High to Low)", "Popularity"
 ]
 
 export const menuList = [
@@ -11,7 +11,7 @@ export const menuList = [
     {
         name: "STORE",
         icon: "store",
-        link: "/allproducts"
+        link: "/shop"
     },
     {
         name: "ABOUT",

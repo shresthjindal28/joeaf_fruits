@@ -47,7 +47,7 @@ function SingleProduct() {
         }
       );
       toast.success(response.data.message || "Product deleted successfully!", { autoClose: 3000 });
-      navigate('/allproducts');
+      navigate('/shop');
     } catch (error) {
       console.log("Error in deleting the Product", error);
       toast.error(error.response?.data?.message || "Failed to delete product!", { autoClose: 3000 });

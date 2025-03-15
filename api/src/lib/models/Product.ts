@@ -11,7 +11,7 @@ export interface ProductDocument extends Document {
     name: string;
     slug: string;
     description: string;
-    category: 'fresh' | 'organic' | 'exotic' | 'berries';
+    category: 'mango' | 'premium mango';
     variants: ProductVariant[];
     images: string[];
     tags: string[];
@@ -34,8 +34,9 @@ const productSchema = new Schema<ProductDocument>(
         description: { type: String, required: true },
         category: {
             type: String,
-            enum: ['fresh', 'organic', 'exotic', 'berries'],
+            enum: ['mango', 'premium mango'],
             required: true,
+            default: 'mango'
         },
         variants: [
             {

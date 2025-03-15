@@ -12,7 +12,7 @@ export const addNewProduct = async (req: Request, res: Response): Promise<any> =
         const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity } = req.body;
 
         const product = await Product.create({
-            name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
+            name, slug, description, variants, category, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
         });
 
         return res.status(201).json({ success: true, product });

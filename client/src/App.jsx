@@ -39,7 +39,7 @@ function App() {
     { path: "/", element: <Home /> },
     { path: "/about", element: <AboutPage /> },
     { path: "/contact", element: <ContactPage /> },
-    { path: "/allproducts", element: <AllProducts /> },
+    { path: "/shop", element: <AllProducts /> },
     { path: "/product/:id", element: <SingleProduct /> },
     { path: "*", element: <ErrorPage /> }
   ];

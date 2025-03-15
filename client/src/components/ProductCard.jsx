@@ -130,7 +130,7 @@ const ProductCard = React.memo(({ product }) => {
                         {/* Product Title */}
                         <span className="font-bold text-lg text-green-800 mb-1">
                             {product.name}
-                            <span className="block text-sm font-normal text-amber-600 mb-2">{product.category}</span>
+                            <span className="block text-sm font-normal text-amber-600 mb-2">'Premium Mango'</span>
                         </span>
 
                         {/* Tags */}

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+
 const AboutUs = () => {
   return (
     <div className="flex flex-col items-center justify-center bg-gray-100 xl:px-30 lg:px-20 md:px-10 sm:px-5 py-10">
@@ -14,9 +15,9 @@ const AboutUs = () => {
       </motion.h1>
 
       {/* Image Section */}
-      <div className="flex w-full px-10">
+      <div className="flex w-full justify-center px-10">
         <motion.img
-          src="../../public/images/Mango/img3.jpg"
+          src="../../public/images/about/img.jpg"
           alt="Luxury fresh fruits beautifully arranged"
           className="rounded-2xl shadow-lg w-full md:w-2/3 lg:w-1/2 object-cover mb-6 shadow-[0px_10px_14px_-7px_#777373] "
           initial={{ opacity: 0, scale: 0.9 }}
@@ -36,7 +37,7 @@ const AboutUs = () => {
         We handpick <strong>the finest organic fruits</strong> from premium farms and deliver them fresh to your doorstep.
         Whether you're looking for <strong>gourmet mangoes, exotic strawberries, or seasonal delicacies</strong>, we bring you the <strong>best quality, guaranteed.</strong>
       </motion.p>
-
+  
       {/* Call to Action */}
       <motion.a
         href="/shop"

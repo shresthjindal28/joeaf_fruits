@@ -51,7 +51,7 @@ function AllProducts() {
     const items = sortedProducts.slice(startIndex, startIndex + columns); // Get products for the row
 
     return (
-      <div style={style} className={`flex grid grid-cols-${columns} sm:gap-0`}>
+      <div style={style} className={`flex grid 2xl:grid-cols-4 lg:grid-cols-3 xs:grid-cols-2 grid-cols-1 sm:gap-0 gap-1`}>
         {items.map((product) => (
           <div key={product._id} className="flex-1 min-w-0">
             <ProductCard product={product} />
@@ -68,11 +68,11 @@ function AllProducts() {
   // Adjust columns based on screen size
   useEffect(() => {
     const updateColumns = () => {
-      if (window.innerWidth >= 1536) {
-        setColumns(4); // 2xl: 3 columns
+      if (window.innerWidth >= 1600) {
+        setColumns(4); // 2xl: 4 columns
       } else if (window.innerWidth >= 1024) {
         setColumns(3); // lg: 3 columns
-      } else if (window.innerWidth >= 500) {
+      } else if (window.innerWidth >= 480) {
         setColumns(2); // xs: 2 columns
       } else {
         setColumns(1); // Default: 1 column
@@ -134,8 +134,8 @@ function AllProducts() {
       <div className="flex-1 pt-6 px-6">
         <div className="mb-2 flex items-center justify-between">
           <span className="sm:text-3xl text-xl font-bold text-green-800">
-            Fresh Fruits Collection
-            <i className="fa-solid fa-leaf text-amber-600 sm:ml-3 ml-1" />
+            Premium Mango Collection
+            <i className="fa-solid fa-mango sm:ml-3 ml-1 text-amber-600" />
           </span>
 
           {/* Mobile Filters Button */}

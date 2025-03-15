@@ -15,7 +15,7 @@ function AddNewProduct() {
         name: '',
         slug: '',
         description: '',
-        category: 'fresh',
+        category: 'mango',
         variants: [{
             weight: '',
             unit: 'g',
@@ -171,10 +171,8 @@ function AddNewProduct() {
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
                         required
                     >
-                        <option value="fresh">Fresh</option>
-                        <option value="organic">Organic</option>
-                        <option value="exotic">Exotic</option>
-                        <option value="berries">Berries</option>
+                        <option value="mango">Mango</option>
+                        <option value="premium mango">Premium Mango</option>
                     </select>
                 </div>
 

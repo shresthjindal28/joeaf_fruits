@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const compression_1 = __importDefault(require("compression"));
 const db_1 = require("./lib/db");
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
@@ -19,6 +20,8 @@ app.use((0, cors_1.default)({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
+// Enable Gzip compression for all responses - Reduces API payload size by ~70%.
+app.use((0, compression_1.default)());
 app.use(express_1.default.json());
 app.use('/auth', auth_routes_1.default);
 app.use('/user', user_routes_1.default);

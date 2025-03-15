@@ -137,10 +137,8 @@ function UpdateProduct() {
                   onChange={handleChange}
                   className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="fresh">Fresh</option>
-                  <option value="organic">Organic</option>
-                  <option value="exotic">Exotic</option>
-                  <option value="berries">Berries</option>
+                  <option value="mango">Mango</option>
+                  <option value="premium mango">Premium Mango</option>
                 </select>
               </div>
 
