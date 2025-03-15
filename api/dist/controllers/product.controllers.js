@@ -21,9 +21,9 @@ const addNewProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (role !== "Admin") {
             return res.status(403).json({ success: false, message: "Unauthorized Access!" });
         }
-        const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity } = req.body;
+        const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, stockQuantity } = req.body;
         const product = yield Product_1.default.create({
-            name, slug, description, variants, category, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
+            name, slug, description, variants, category, images, tags, origin, nutritionalInfo, stockQuantity
         });
         return res.status(201).json({ success: true, product });
     }
@@ -87,7 +87,7 @@ const addProductToWishlist = (req, res) => __awaiter(void 0, void 0, void 0, fun
             .select('wishList')
             .populate({
             path: 'wishList',
-            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
             model: 'Product'
         });
         return res.status(200).json({ success: true, message: "Product Added to Wishlist Successfully", list: userUpdatedList });
@@ -112,7 +112,7 @@ const removeProductToWishlist = (req, res) => __awaiter(void 0, void 0, void 0, 
             .select('wishList')
             .populate({
             path: 'wishList',
-            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
             model: 'Product'
         });
         return res.status(200).json({ success: true, message: "Product From the Wishlist Successfully", list: userUpdatedList });
@@ -137,7 +137,7 @@ const addProductToCart = (req, res) => __awaiter(void 0, void 0, void 0, functio
             .select('cart')
             .populate({
             path: 'cart',
-            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
             model: 'Product'
         });
         return res.status(200).json({ success: true, message: "Product Added to Wishlist Successfully", list: userUpdatedList });
@@ -162,7 +162,7 @@ const removeProductToCart = (req, res) => __awaiter(void 0, void 0, void 0, func
             .select('cart')
             .populate({
             path: 'cart',
-            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
             model: 'Product'
         });
         return res.status(200).json({ success: true, message: "Product From the Wishlist Successfully", list: userUpdatedList });

@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 
-
 const AboutUs = () => {
   return (
     <div className="flex flex-col items-center justify-center bg-gray-100 xl:px-30 lg:px-20 md:px-10 sm:px-5 py-10">
@@ -11,7 +10,7 @@ const AboutUs = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        About Joeaf Fruits 🍓🥭
+        About Joeaf Fruits 🥭
       </motion.h1>
 
       {/* Image Section */}
@@ -33,11 +32,12 @@ const AboutUs = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
       >
-        Welcome to <span className="font-bold text-green-700">Joeaf Fruits</span>, where <strong>luxury meets freshness</strong>! 🍇✨
-        We handpick <strong>the finest organic fruits</strong> from premium farms and deliver them fresh to your doorstep.
-        Whether you're looking for <strong>gourmet mangoes, exotic strawberries, or seasonal delicacies</strong>, we bring you the <strong>best quality, guaranteed.</strong>
+        Welcome to <span className="font-bold text-yellow-700">Joeaf Mangoes</span>, where <strong>premium quality meets unbeatable freshness</strong>! 🥭
+        We source <strong>the juiciest, handpicked mangoes</strong> from the finest orchards and deliver them farm-fresh to your doorstep.
+        From <strong>**Devgad Alphonso Mango to Ratnagiri, Dussehri to Langra**</strong>, indulge in the <strong>rich flavors of India's best mangoes</strong>, guaranteed to satisfy every craving.
+        Enjoy **100% organic, naturally ripened mangoes** with an authentic taste of summer in every bite! 🌿
       </motion.p>
-  
+
       {/* Call to Action */}
       <motion.a
         href="/shop"
@@ -46,7 +46,7 @@ const AboutUs = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6 }}
       >
-        Explore Our Collection 🍊
+        Explore Our Collection 🥭
       </motion.a>
     </div>
   );

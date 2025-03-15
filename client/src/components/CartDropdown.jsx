@@ -7,6 +7,12 @@ const CartDropdown = React.memo(({ setShowCart }) => {
     const dispatch = useDispatch();
     const userCartList = useSelector(selectCartList);
 
+    const unitLabels = {
+        'per piece': 'pieces',
+        'per kg': 'kg',
+        'per dozen': 'dozen'
+    };
+
     const handleRemoveCart = (item) => {
         dispatch(removeProductFromCart({ productId: item._id }));
     }
@@ -38,10 +44,16 @@ const CartDropdown = React.memo(({ setShowCart }) => {
                                                 <i className="fa-solid fa-trash fa-shake" style={{ color: "#FFD43B" }} />
                                             </div>
                                         </div>
-                                        <p className="text-sm text-amber-600">{item.category}</p>
+                                        <p className="text-sm text-amber-600">
+                                            {item.variants[0].size} • {item.category}
+                                        </p>
                                         <div className="flex justify-between items-center mt-1">
-                                            <span className="text-green-600 font-bold text-[20px]">${item.variants[0].price}</span>
-                                            <span className="text-gray-500 text-sm">Qty: {item.variants[0].weight} {item.variants[0].unit}</span>
+                                            <span className="text-green-600 font-bold text-[20px]">
+                                                ${item.variants[0].price}
+                                            </span>
+                                            <span className="text-gray-500 text-sm">
+                                                Qty: 1 {unitLabels[item.variants[0].pricingUnit]}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -52,7 +64,7 @@ const CartDropdown = React.memo(({ setShowCart }) => {
                             <div className="flex justify-between items-center mb-4">
                                 <span className="font-bold text-green-800 text-md">Subtotal:</span>
                                 <span className="text-green-600 font-bold text-[20px]">
-                                    ${userCartList.reduce((sum, item) => sum + (item.variants[0].price * item.variants[0].weight), 0).toFixed(2)}
+                                    ${userCartList.reduce((sum, item) => sum + (item.variants[0].price * item.quantity), 0).toFixed(2)}
                                 </span>
                             </div>
                             <div className="grid grid-cols-2 gap-2 text-[18px] font-bold">

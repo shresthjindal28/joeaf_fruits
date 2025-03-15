@@ -62,7 +62,7 @@ const getUserWishList = (req, res) => __awaiter(void 0, void 0, void 0, function
             .select('wishList')
             .populate({
             path: 'wishList',
-            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
             model: 'Product'
         });
         res.json({
@@ -83,7 +83,7 @@ const getUserCartList = (req, res) => __awaiter(void 0, void 0, void 0, function
             .select('cart')
             .populate({
             path: 'cart',
-            select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+            select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
             model: 'Product'
         });
         res.json({

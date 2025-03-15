@@ -230,7 +230,7 @@ function Home() {
                         {allProducts && allProducts.slice(0, 6).map((item, index) => (
                             <motion.div
                                 key={index}
-                                whileHover={{ scale: 1.03 }}
+                                whileHover={{ scale: 1.05 }}
                                 className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
                             >
                                 {/* Product Image */}
@@ -240,6 +240,7 @@ function Home() {
                                         alt=""
                                         loading='lazy'
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        onClick={() => handleFruitClick(item)}
                                     />
 
                                     {/* Hover Buttons (Appear from top) */}
@@ -294,23 +295,19 @@ function Home() {
                                 </div>
 
                                 {/* Product Info */}
-                                <div className="px-3 pt-3 h-16 text-center">
+                                <div className="px-3 py-3 h-16 text-center">
                                     <p className="text-lg font-semibold text-gray-800 mb-1">{item.name}</p>
                                 </div>
 
                                 {/* Price */}
-                                <div className="flex px-3 justify-between items-center mb-1">
-                                    <span className="text-sm px-2 py-1 rounded bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 text-white">
-                                        {item.variants[0].weight} {item.variants[0].unit}
+                                <div className="flex px-3 justify-between items-center my-2">
+                                    <span className="text-sm font-bold text-gray-900 py-1">
+                                        ₹{item.variants[0].price}
+                                        <span className="text-sm font-normal">/{item.variants[0].pricingUnit}</span>
                                     </span>
-                                    <p className="text-lg font-bold text-gray-900 pt-3">
-                                        ${item.variants[0].price}
-                                        {item.variants[0].originalPrice && (
-                                            <span className="ml-3 text-sm text-red-500 line-through">
-                                                ${item.variants[0].originalPrice + 2}
-                                            </span>
-                                        )}
-                                    </p>
+                                    <span className="text-sm px-2 py-1 rounded bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 text-white">
+                                        {item.variants[0].singlePieceWeight} {item.variants[0].weightUnit}
+                                    </span>
                                 </div>
                             </motion.div>
                         ))}

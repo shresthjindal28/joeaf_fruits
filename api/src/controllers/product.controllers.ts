@@ -9,10 +9,10 @@ export const addNewProduct = async (req: Request, res: Response): Promise<any> =
             return res.status(403).json({ success: false, message: "Unauthorized Access!" });
         }
 
-        const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity } = req.body;
+        const { name, slug, description, category, variants, images, tags, origin, nutritionalInfo, stockQuantity } = req.body;
 
         const product = await Product.create({
-            name, slug, description, variants, category, images, tags, origin, nutritionalInfo, discountPercentage, stockQuantity
+            name, slug, description, variants, category, images, tags, origin, nutritionalInfo, stockQuantity
         });
 
         return res.status(201).json({ success: true, product });
@@ -83,7 +83,7 @@ export const addProductToWishlist = async (req: Request, res: Response): Promise
             .select('wishList')
             .populate({
                 path: 'wishList',
-                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
                 model: 'Product'
             });
 
@@ -115,7 +115,7 @@ export const removeProductToWishlist = async (req: Request, res: Response): Prom
             .select('wishList')
             .populate({
                 path: 'wishList',
-                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
                 model: 'Product'
             });
 
@@ -147,7 +147,7 @@ export const addProductToCart = async (req: Request, res: Response): Promise<any
             .select('cart')
             .populate({
                 path: 'cart',
-                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
                 model: 'Product'
             });
 
@@ -179,7 +179,7 @@ export const removeProductToCart = async (req: Request, res: Response): Promise<
             .select('cart')
             .populate({
                 path: 'cart',
-                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
                 model: 'Product'
             });
 

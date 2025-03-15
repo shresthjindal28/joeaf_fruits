@@ -57,7 +57,7 @@ export const getUserWishList = async (req: Request, res: Response): Promise<any>
             .select('wishList')
             .populate({
                 path: 'wishList',
-                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
                 model: 'Product'
             });
 
@@ -78,7 +78,7 @@ export const getUserCartList = async (req: Request, res: Response): Promise<any>
             .select('cart')
             .populate({
                 path: 'cart',
-                select: 'name description images category variants tags origin nuritioinalInfo discountPercentage',
+                select: 'name description images category variants tags origin nuritioinalInfo stockQuantity',
                 model: 'Product'
             });
 

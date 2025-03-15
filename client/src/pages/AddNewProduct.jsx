@@ -17,19 +17,22 @@ function AddNewProduct() {
         description: '',
         category: 'mango',
         variants: [{
-            weight: '',
-            unit: 'g',
-            price: '',
-            originalPrice: ''
+            size: 'medium',
+            singlePieceWeight: 0,
+            weightUnit: 'g',
+            pricingUnit: 'per piece',
+            price: 0,
+            originalPrice: 0,
+            discountPercentage: 0
         }],
         images: [],
         tags: [],
         origin: 'indian',
         nutritionalInfo: {
-            calories: '',
+            calories: 0,
             vitamins: []
         },
-        discountPercentage: 0,
+        isFeatured: false,
         stockQuantity: 0
     });
 
@@ -52,7 +55,13 @@ function AddNewProduct() {
     const handleVariantChange = (index, e) => {
         const { name, value } = e.target;
         const variants = [...fruitData.variants];
-        variants[index][name] = value;
+
+        // Convert numeric fields to numbers
+        const parsedValue = ['singlePieceWeight', 'price', 'originalPrice', 'discountPercentage'].includes(name)
+            ? parseFloat(value)
+            : value;
+
+        variants[index][name] = parsedValue;
         setFruitData({ ...fruitData, variants });
     };
 
@@ -60,10 +69,13 @@ function AddNewProduct() {
         setFruitData({
             ...fruitData,
             variants: [...fruitData.variants, {
-                weight: '',
-                unit: 'g',
-                price: '',
-                originalPrice: ''
+                size: 'medium',
+                singlePieceWeight: 0,
+                weightUnit: 'g',
+                pricingUnit: 'per piece',
+                price: 0,
+                originalPrice: 0,
+                discountPercentage: 0
             }]
         });
     };
@@ -144,101 +156,181 @@ function AddNewProduct() {
     }, [newProduct, err])
 
     return (
-        <div className="flex items-center justify-center h-full w-full bg-gray-100 p-3">
-            <ToastContainer position="top-right" />
+        <div className="flex items-center justify-center min-h-screen w-full bg-amber-50 p-3">
+            <ToastContainer position="top-right" toastClassName="!bg-amber-100 !text-green-800" />
 
             {/* Loading Overlay */}
             {isLoading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                    <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+                    <div className="w-16 h-16 border-4 border-t-amber-500 border-amber-100 rounded-full animate-spin"></div>
                 </div>
             )}
 
             {/* Form */}
             <form
                 onSubmit={handleSubmit}
-                className="bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl space-y-6 max-h-[86vh] overflow-y-scroll hide-scrollbar"
+                className="bg-white shadow-xl rounded-2xl p-4 w-full max-w-4xl space-y-8 max-h-[90vh] overflow-y-scroll hide-scrollbar border-2 border-amber-100"
             >
-                <h2 className="text-2xl font-bold text-gray-800 mb-3">Add New Fruit</h2>
-
-                {/* Category */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Category</label>
-                    <select
-                        name="category"
-                        value={fruitData.category}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        required
-                    >
-                        <option value="mango">Mango</option>
-                        <option value="premium mango">Premium Mango</option>
-                    </select>
+                {/* Form Header */}
+                <div className="text-center mb-8">
+                    <span className="sm:text-3xl xs:text-2xl text-lg font-bold text-amber-800 mb-2">
+                        Add New Mango Product 🥭
+                    </span>
+                    <p className="text-amber-600 xs:text-lg text-xs">Fill in details of your mango</p>
                 </div>
 
-                {/* Name */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Fruit Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={fruitData.name}
-                        onChange={handleChange}
-                        placeholder="Enter fruit name"
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        required
-                    />
+                {/* Name and Type */}
+                <div className="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                    <div className="flex items-center mb-4">
+                        <i className="fas fa-tag text-amber-600 mr-2" />
+                        <label className="text-xl font-semibold text-amber-800">Basic Information</label>
+                    </div>
+
+                    <div className="space-y-6">
+                        {/* Category Input */}
+                        <div>
+                            <label className="block text-amber-800 font-medium mb-2">Category</label>
+                            <div className="">
+                                <select
+                                    name="category"
+                                    value={fruitData.category}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border-2 border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-800"
+                                    required
+                                >
+                                    <option value="mango">Standard Mango</option>
+                                    <option value="premium mango">Premium Mango</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Name Input */}
+                        <div>
+                            <label className="block text-amber-800 font-medium mb-2">Mango Name</label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={fruitData.name}
+                                    onChange={handleChange}
+                                    placeholder="e.g., Alphonso, Kesar"
+                                    className="w-full p-2 border-2 border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-800"
+                                    required
+                                />
+                                <i className="fas fa-mango absolute right-3 top-4 text-amber-500" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Variants */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Product Variants</label>
+                {/* Variants Section */}
+                <div className="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                    <div className="flex items-center mb-4">
+                        <i className="fas fa-weight-hanging text-amber-600 mr-2" />
+                        <span className="text-xl font-semibold text-amber-800">Pricing & Variants</span>
+                    </div>
                     {fruitData.variants.map((variant, index) => (
-                        <div key={index} className="mb-4 p-3 border rounded-lg">
-                            <div className="grid grid-cols-2 gap-3">
+                        <div key={index} className="mb-4 p-3 bg-white rounded-lg shadow-sm border border-amber-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* Size */}
+                                <div className='relative'>
+                                    <label className="block text-sm text-amber-700 mb-1">Size</label>
+                                    <select
+                                        name="size"
+                                        value={variant.size}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                        required
+                                    >
+                                        <option value="small">Small</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="large">Large</option>
+                                        <option value="jumbo">Jumbo</option>
+                                    </select>
+                                </div>
+
+                                {/* Single Piece Weight */}
                                 <div>
-                                    <label className="block text-sm text-gray-600">Weight</label>
+                                    <label className="block text-sm text-amber-700 mb-1">Single Piece Weight</label>
                                     <input
                                         type="number"
-                                        name="weight"
-                                        value={variant.weight}
+                                        name="singlePieceWeight"
+                                        value={variant.singlePieceWeight}
                                         onChange={(e) => handleVariantChange(index, e)}
-                                        className="w-full p-2 border rounded"
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                        step="0.01"
                                         required
                                     />
                                 </div>
+
+                                {/* Weight Unit */}
                                 <div>
-                                    <label className="block text-sm text-gray-600">Unit</label>
+                                    <label className="block text-sm text-amber-700 mb-1">Weight Unit</label>
                                     <select
-                                        name="unit"
-                                        value={variant.unit}
+                                        name="weightUnit"
+                                        value={variant.weightUnit}
                                         onChange={(e) => handleVariantChange(index, e)}
-                                        className="w-full p-2 border rounded"
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
                                     >
-                                        <option value="g">Grams</option>
-                                        <option value="kg">Kilograms</option>
-                                        <option value="pcs">Pieces</option>
+                                        <option value="g">Grams (g)</option>
+                                        <option value="kg">Kilograms (kg)</option>
                                     </select>
                                 </div>
+
+                                {/* Pricing Unit */}
                                 <div>
-                                    <label className="block text-sm text-gray-600">Price</label>
+                                    <label className="block text-sm text-amber-700 mb-1">Pricing Unit</label>
+                                    <select
+                                        name="pricingUnit"
+                                        value={variant.pricingUnit}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                    >
+                                        <option value="per piece">Per Piece</option>
+                                        <option value="per kg">Per Kilogram</option>
+                                        <option value="per dozen">Per Dozen</option>
+                                    </select>
+                                </div>
+
+                                {/* Price */}
+                                <div>
+                                    <label className="block text-sm text-amber-700 mb-1">Price</label>
                                     <input
                                         type="number"
                                         name="price"
                                         value={variant.price}
                                         onChange={(e) => handleVariantChange(index, e)}
-                                        className="w-full p-2 border rounded"
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                        step="0.01"
                                         required
                                     />
                                 </div>
+
+                                {/* Original Price */}
                                 <div>
-                                    <label className="block text-sm text-gray-600">Original Price</label>
+                                    <label className="block text-sm text-amber-700 mb-1">Original Price</label>
                                     <input
                                         type="number"
                                         name="originalPrice"
                                         value={variant.originalPrice}
                                         onChange={(e) => handleVariantChange(index, e)}
-                                        className="w-full p-2 border rounded"
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                        step="0.01"
+                                    />
+                                </div>
+
+                                {/* Discount Percentage */}
+                                <div>
+                                    <label className="block text-sm text-amber-700 mb-1">Discount Percentage</label>
+                                    <input
+                                        type="number"
+                                        name="discountPercentage"
+                                        value={variant.discountPercentage}
+                                        onChange={(e) => handleVariantChange(index, e)}
+                                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                        min="0"
+                                        max="100"
+                                        step="1"
                                     />
                                 </div>
                             </div>
@@ -246,8 +338,9 @@ function AddNewProduct() {
                                 <button
                                     type="button"
                                     onClick={() => removeVariant(index)}
-                                    className="mt-2 text-red-500 text-sm hover:text-red-700"
+                                    className="mt-3 text-red-500 hover:text-red-700 text-sm flex items-center"
                                 >
+                                    <i className="fas fa-times mr-1" />
                                     Remove Variant
                                 </button>
                             )}
@@ -256,103 +349,99 @@ function AddNewProduct() {
                     <button
                         type="button"
                         onClick={addVariant}
-                        className="text-green-500 hover:text-green-700 text-sm"
+                        className="w-full py-2 text-amber-700 hover:text-amber-900 border-2 border-dashed border-amber-300 rounded-lg flex items-center justify-center gap-2"
                     >
-                        + Add Variant
+                        <i className="fas fa-plus-circle" />
+                        Add Variant
                     </button>
                 </div>
 
-                {/* Origin */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Origin</label>
-                    <select
-                        name="origin"
-                        value={fruitData.origin}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        required
-                    >
-                        <option value="indian">Indian</option>
-                        <option value="imported">Imported</option>
-                    </select>
-                </div>
-
-                {/* Nutritional Info */}
-                <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
-                    <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Calories (per 100g)</label>
-                        <input
-                            type="number"
-                            name="nutritionalInfo.calories"
-                            value={fruitData.nutritionalInfo.calories}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                        />
+                {/* Additional Information */}
+                <div className="bg-amber-50 p-3 rounded-xl border border-amber-100 space-y-6">
+                    <div className="flex items-center mb-4">
+                        <i className="fa-solid fa-square-pen fa-lg text-amber-600 mr-2" />
+                        <span className="text-xl font-semibold text-amber-800">Additional Details</span>
                     </div>
+                    
+                    {/* Origin */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Vitamins (comma separated)</label>
+                        <label className="block text-sm text-amber-700 mb-1">Origin</label>
+                        <select
+                            name="origin"
+                            value={fruitData.origin}
+                            onChange={handleChange}
+                            className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                            required
+                        >
+                            <option value="indian">Indian</option>
+                            <option value="imported">Imported</option>
+                        </select>
+                    </div>
+
+                    {/* Nutritional Info */}
+                    <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
+                        <div>
+                            <label className="block text-sm text-amber-700 mb-1">Calories (per 100g)</label>
+                            <input
+                                type="number"
+                                name="nutritionalInfo.calories"
+                                value={fruitData.nutritionalInfo.calories}
+                                onChange={handleChange}
+                                className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-amber-700 mb-1">Vitamins (comma separated)</label>
+                            <input
+                                type="text"
+                                name="nutritionalInfo.vitamins"
+                                value={fruitData.nutritionalInfo.vitamins.join(', ')}
+                                onChange={(e) => {
+                                    const vitamins = e.target.value.split(',').map(v => v.trim());
+                                    setFruitData(prev => ({
+                                        ...prev,
+                                        nutritionalInfo: {
+                                            ...prev.nutritionalInfo,
+                                            vitamins
+                                        }
+                                    }));
+                                }}
+                                className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                                placeholder="C, K, A..."
+                            />
+                        </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div>
+                        <label className="block text-sm text-amber-700 mb-1">Tags (comma separated)</label>
                         <input
                             type="text"
-                            name="nutritionalInfo.vitamins"
-                            value={fruitData.nutritionalInfo.vitamins.join(', ')}
-                            onChange={(e) => {
-                                const vitamins = e.target.value.split(',').map(v => v.trim());
-                                setFruitData(prev => ({
-                                    ...prev,
-                                    nutritionalInfo: {
-                                        ...prev.nutritionalInfo,
-                                        vitamins
-                                    }
-                                }));
-                            }}
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                            placeholder="C, K, A..."
+                            value={fruitData.tags.join(', ')}
+                            onChange={handleTagsChange}
+                            className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                            placeholder="organic, summer-fruits, exotic..."
                         />
                     </div>
-                </div>
 
-                {/* Tags */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Tags (comma separated)</label>
-                    <input
-                        type="text"
-                        value={fruitData.tags.join(', ')}
-                        onChange={handleTagsChange}
-                        className="w-full p-3 border border-gray-300 rounded-md"
-                        placeholder="organic, summer-fruits, exotic..."
-                    />
-                </div>
+                    {/* Stock Quantity */}
+                    <div>
+                        <label className="block text-sm text-amber-700 mb-1">Stock Quantity</label>
+                        <input
+                            type="number"
+                            name="stockQuantity"
+                            value={fruitData.stockQuantity}
+                            onChange={handleChange}
+                            className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
+                            required
+                            min="0"
+                        />
+                    </div>
 
-                {/* Stock Quantity */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Stock Quantity</label>
-                    <input
-                        type="number"
-                        name="stockQuantity"
-                        value={fruitData.stockQuantity}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-gray-300 rounded-md"
-                        required
-                        min="0"
-                    />
-                </div>
-
-                {/* Discount Percentage */}
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Discount Percentage</label>
-                    <input
-                        type="number"
-                        name="discountPercentage"
-                        value={fruitData.discountPercentage}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-gray-300 rounded-md"
-                        min="0"
-                        max="100"
-                    />
                 </div>
 
                 {/* Description */}
-                <div>
+                <div className='bg-amber-50 p-3 rounded-xl border border-amber-100 space-y-6'>
                     <label className="block text-gray-700 font-semibold mb-2" htmlFor="description">
                         Description about the fruit
                     </label>
@@ -362,28 +451,44 @@ function AddNewProduct() {
                         value={fruitData.description}
                         onChange={handleChange}
                         placeholder="Enter fruit description"
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                        className="w-full p-2 border-2 border-amber-100 rounded-md bg-white text-amber-800"
                         rows="4"
                         required
                     ></textarea>
                 </div>
 
                 {/* Image Upload Section */}
-                <div>
-                    <label className="block text-gray-700 font-medium mb-2">Product Images</label>
+                <div className="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                    <div className="flex items-center mb-4">
+                        <i className="fas fa-images text-amber-600 mr-2" />
+                        <span className="text-xl font-semibold text-amber-800">Mango Images</span>
+                    </div>
 
-                    {/* Hidden file input */}
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        id="imageUpload"
-                    />
+                    <div className="border-2 border-dashed border-amber-200 rounded-xl p-3 text-center">
+                        {/* Hidden file input */}
+                        <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            id="imageUpload"
+                        />
+
+                        <label
+                            htmlFor="imageUpload"
+                            className="cursor-pointer flex flex-col items-center justify-center space-y-3"
+                        >
+                            <i className="fas fa-upload text-amber-500 text-3xl" />
+                            <p className="text-amber-700 font-medium">
+                                Drag & drop images or <span className="text-amber-600 underline">browse files</span>
+                            </p>
+                            <p className="sm:text-xs text-xs text-amber-500">Recommended size: 800x800px</p>
+                        </label>
+                    </div>
 
                     {/* Custom upload button */}
-                    <button
+                    {/* <button
                         type="button"
                         onClick={() => document.getElementById('imageUpload').click()}
                         className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium flex items-center justify-center gap-2"
@@ -392,7 +497,7 @@ function AddNewProduct() {
                             <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                         </svg>
                         Upload Images
-                    </button>
+                    </button> */}
 
                     {/* Image Previews */}
                     {fruitData.images.length > 0 && (
@@ -424,9 +529,9 @@ function AddNewProduct() {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                    className="w-full py-4 bg-gradient-to-r from-amber-500 to-green-600 text-white rounded-xl font-bold text-lg hover:from-amber-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl"
                 >
-                    Add Fruit
+                    Add Mango Product
                 </button>
             </form>
         </div>

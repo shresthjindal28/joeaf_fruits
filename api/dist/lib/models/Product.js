@@ -13,10 +13,13 @@ const productSchema = new mongoose_1.Schema({
     },
     variants: [
         {
-            weight: { type: Number, required: true },
-            unit: { type: String, enum: ['g', 'kg', 'pcs'], required: true },
+            size: { type: String, enum: ['small', 'medium', 'large', 'jumbo'], required: true },
+            singlePieceWeight: { type: Number, required: true },
+            weightUnit: { type: String, enum: ['g', 'kg'], required: true },
+            pricingUnit: { type: String, enum: ['per piece', 'per kg', 'per dozen'], required: true },
             price: { type: Number, required: true },
             originalPrice: Number,
+            discountPercentage: { type: Number, default: 0 }
         },
     ],
     images: [
@@ -33,7 +36,6 @@ const productSchema = new mongoose_1.Schema({
         vitamins: [String],
     },
     isFeatured: { type: Boolean, default: false },
-    discountPercentage: { type: Number, default: 0 },
     stockQuantity: { type: Number, required: true, min: 0 },
 }, { timestamps: true });
 // Indexes for common queries

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import uploadFile from '../components/FileUploadar';
@@ -14,11 +14,18 @@ function UpdateProduct() {
   const [isLoading, setLoading] = useState(false);
   const [productData, setProductData] = useState({
     ...product,
-    variants: product?.variants || [{ weight: 0, unit: 'g', price: 0 }],
+    variants: product?.variants || [{
+      size: 'medium',
+      singlePieceWeight: 0,
+      weightUnit: 'g',
+      pricingUnit: 'per piece',
+      price: 0,
+      originalPrice: 0,
+      discountPercentage: 0
+    }],
     images: product?.images || [],
     tags: product?.tags || [],
     nutritionalInfo: product?.nutritionalInfo || { calories: 0, vitamins: [] },
-    discountPercentage: product?.discountPercentage || 0,
     stockQuantity: product?.stockQuantity || 0,
     isFeatured: product?.isFeatured || false
   })
@@ -37,16 +44,28 @@ function UpdateProduct() {
   }
 
   const handleVariantChange = (index, e) => {
-    const { name, value } = e.target
-    const variants = [...productData.variants]
-    variants[index] = { ...variants[index], [name]: value }
-    setProductData(prev => ({ ...prev, variants }))
-  }
+    const { name, value } = e.target;
+    setProductData(prev => {
+      const updatedVariants = prev.variants.map((variant, i) =>
+        i === index ? { ...variant, [name]: value } : variant
+      );
+
+      return { ...prev, variants: updatedVariants };
+    });
+  };
 
   const addVariant = () => {
     setProductData(prev => ({
       ...prev,
-      variants: [...prev.variants, { weight: 0, unit: 'g', price: 0 }]
+      variants: [...prev.variants, {
+        size: 'medium',
+        singlePieceWeight: 0,
+        weightUnit: 'g',
+        pricingUnit: 'per piece',
+        price: 0,
+        originalPrice: 0,
+        discountPercentage: 0
+      }]
     }))
   }
 
@@ -112,16 +131,16 @@ function UpdateProduct() {
   }, [updatedProduct, err])
 
   return (
-    <div className='flex flex-grow w-full h-full bg-zinc-100 overflow-y-scroll hide-scrollbar px-4'>
-      <ToastContainer position="top-right" />
-      
+    <div className="flex items-center justify-center min-h-screen w-full bg-amber-50 p-3">
+      <ToastContainer position="top-right" toastClassName="!bg-amber-100 !text-green-800" />
+
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-t-amber-500 border-amber-100 rounded-full animate-spin"></div>
         </div>
       )}
-     
+
       <div className='flex flex-col gap-3 w-full h-full lg:px-16 md:px-6 sm:px-3 py-4'>
         <div className='font-bold md:text-2xl sm:text-xl text-lg text-md'>Update the Product Details</div>
         <div className='flex lg:flex-row flex-col w-full h-full gap-3'>
@@ -159,48 +178,106 @@ function UpdateProduct() {
                 <label className="block text-sm font-medium text-gray-700">Product Variants</label>
                 {productData.variants.map((variant, index) => (
                   <div key={index} className="p-3 border rounded-lg space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs text-gray-600">Weight</label>
-                        <input
-                          type="number"
-                          name="weight"
-                          value={variant.weight}
-                          onChange={(e) => handleVariantChange(index, e)}
-                          className="w-full p-2 border rounded"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-gray-600">Unit</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Size */}
+                      <div className='relative'>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Size</label>
                         <select
-                          name="unit"
-                          value={variant.unit}
+                          name="size"
+                          value={variant.size}
                           onChange={(e) => handleVariantChange(index, e)}
-                          className="w-full p-2 border rounded"
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          required
                         >
-                          <option value="g">Grams</option>
-                          <option value="kg">Kilograms</option>
-                          <option value="pcs">Pieces</option>
+                          <option value="small">Small</option>
+                          <option value="medium">Medium</option>
+                          <option value="large">Large</option>
+                          <option value="jumbo">Jumbo</option>
                         </select>
                       </div>
+
+                      {/* Single Piece Weight */}
                       <div>
-                        <label className="block text-xs text-gray-600">Price</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Single Piece Weight</label>
+                        <input
+                          type="number"
+                          name="singlePieceWeight"
+                          value={variant.singlePieceWeight}
+                          onChange={(e) => handleVariantChange(index, e)}
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          step="0.01"
+                          required
+                        />
+                      </div>
+
+                      {/* Weight Unit */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Weight Unit</label>
+                        <select
+                          name="weightUnit"
+                          value={variant.weightUnit}
+                          onChange={(e) => handleVariantChange(index, e)}
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="g">Grams (g)</option>
+                          <option value="kg">Kilograms (kg)</option>
+                        </select>
+                      </div>
+
+                      {/* Pricing Unit */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Pricing Unit</label>
+                        <select
+                          name="pricingUnit"
+                          value={variant.pricingUnit}
+                          onChange={(e) => handleVariantChange(index, e)}
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="per piece">Per Piece</option>
+                          <option value="per kg">Per Kilogram</option>
+                          <option value="per dozen">Per Dozen</option>
+                        </select>
+                      </div>
+
+                      {/* Price */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
                         <input
                           type="number"
                           name="price"
                           value={variant.price}
                           onChange={(e) => handleVariantChange(index, e)}
-                          className="w-full p-2 border rounded"
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          step="0.01"
+                          required
                         />
                       </div>
+
+                      {/* Original Price */}
                       <div>
-                        <label className="block text-xs text-gray-600">Original Price</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Original Price</label>
                         <input
                           type="number"
                           name="originalPrice"
-                          value={variant.originalPrice || ''}
+                          value={variant.originalPrice}
                           onChange={(e) => handleVariantChange(index, e)}
-                          className="w-full p-2 border rounded"
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          step="0.01"
+                        />
+                      </div>
+
+                      {/* Discount Percentage */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
+                        <input
+                          type="number"
+                          name="discountPercentage"
+                          value={variant.discountPercentage}
+                          onChange={(e) => handleVariantChange(index, e)}
+                          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          min="0"
+                          max="100"
+                          step="1"
                         />
                       </div>
                     </div>
@@ -222,20 +299,6 @@ function UpdateProduct() {
                 >
                   + Add Variant
                 </button>
-              </div>
-
-              {/* Origin */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Origin</label>
-                <select
-                  name="origin"
-                  value={productData.origin}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="indian">Indian</option>
-                  <option value="imported">Imported</option>
-                </select>
               </div>
 
               {/* Tags */}
@@ -327,20 +390,22 @@ function UpdateProduct() {
                     className="w-full p-2 border rounded-md"
                   />
                 </div>
+                {/* Origin */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
-                  <input
-                    type="number"
-                    name="discountPercentage"
-                    value={productData.discountPercentage}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Origin</label>
+                  <select
+                    name="origin"
+                    value={productData.origin}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded-md"
-                    min="0"
-                    max="100"
-                  />
+                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="indian">Indian</option>
+                    <option value="imported">Imported</option>
+                  </select>
                 </div>
               </div>
 
+              {/* Product Images */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Product Images</label>
 
@@ -397,9 +462,9 @@ function UpdateProduct() {
                 <button
                   onClick={handleUpdate}
                   disabled={productData === product}
-                  className='flex w-full px-3 bg-gradient-to-r from-blue-400 to-blue-700 hover:from-blue-500 hover:to-blue-900 items-center justify-center py-3 text-lg text-white'
+                  className='w-full py-4 bg-gradient-to-r from-amber-500 to-green-600 text-white rounded-xl font-bold text-lg hover:from-amber-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl'
                 >
-                  Update
+                  Update Details
                 </button>
               </div>
             </div>

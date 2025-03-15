@@ -1,11 +1,15 @@
 import { Document, Schema, model } from 'mongoose';
 
 interface ProductVariant {
-    weight: number;
-    unit: 'g' | 'kg' | 'pcs';
+    size: 'small' | 'medium' | 'large' | 'jumbo';
+    singlePieceWeight: number; 
+    weightUnit: 'g' | 'kg'; 
+    pricingUnit: 'per piece' | 'per kg' | 'per dozen';  
     price: number;
     originalPrice?: number;
+    discountPercentage?: number;
 }
+
 
 export interface ProductDocument extends Document {
     name: string;
@@ -21,7 +25,6 @@ export interface ProductDocument extends Document {
         vitamins: string[];
     };
     isFeatured: boolean;
-    discountPercentage?: number;
     stockQuantity: number;
     createdAt: Date;
     updatedAt: Date;
@@ -40,10 +43,13 @@ const productSchema = new Schema<ProductDocument>(
         },
         variants: [
             {
-                weight: { type: Number, required: true },
-                unit: { type: String, enum: ['g', 'kg', 'pcs'], required: true },
+                size: { type: String, enum: ['small', 'medium', 'large', 'jumbo'], required: true },
+                singlePieceWeight: { type: Number, required: true },
+                weightUnit: { type: String, enum: ['g', 'kg'], required: true },
+                pricingUnit: { type: String, enum: ['per piece', 'per kg', 'per dozen'], required: true },
                 price: { type: Number, required: true },
                 originalPrice: Number,
+                discountPercentage: { type: Number, default: 0}
             },
         ],
         images: [
@@ -60,7 +66,6 @@ const productSchema = new Schema<ProductDocument>(
             vitamins: [String],
         },
         isFeatured: { type: Boolean, default: false },
-        discountPercentage: { type: Number, default: 0},
         stockQuantity: { type: Number, required: true, min: 0 },
     },
     { timestamps: true }

@@ -6,6 +6,7 @@ import { selectUserInfo } from '../redux/slices/UserInfoSlice';
 import { addProductToCart, addProductToWishList, removeProductFromCart, removeProductFromWishList, selectCartList, selectWishList, setSingleProduct } from '../redux/slices/ProductDataSlice';
 
 const ProductCard = React.memo(({ product }) => {
+    const mainVariant = product.variants[0];
     const intervalRefs = useRef({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -69,13 +70,14 @@ const ProductCard = React.memo(({ product }) => {
     return (
         <div className="relative flex w-full h-full sm:px-4 w-full">
             <div
+                onClick={() => handleClick(product)}
                 className="group w-full xl:h-[69vh] sm:h-[70vh] h-[70vh] bg-gradient-to-br from-amber-50 via-yellow-50 to-green-50 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 relative border-2 border-amber-100"
             >
                 {/* Discount & Origin Badges */}
                 <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
                     {product.discountPercentage > 0 && (
                         <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                            {product.discountPercentage}% OFF
+                            {product.variants[0].discountPercentage}% OFF
                         </div>
                     )}
                     {product.origin === "imported" && (
@@ -123,47 +125,56 @@ const ProductCard = React.memo(({ product }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
 
-                {/* Product Content */}
-                <div className="px-3 py-2 h-full bg-white/90">
-                    {/* Product Title */}
-                    <span className="font-bold text-lg text-green-800 mb-1">
-                        {product.name}
-                        <span className="block text-sm font-normal text-amber-600 mb-2">'Premium Mango'</span>
-                    </span>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-2">
-                        {product.tags?.slice(0, 4).map((tag, i) => (
-                            <span key={i} className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
-                                #{tag}
-                            </span>
-                        ))}
-                    </div>
-
-                    {/* Stock & Weight */}
-                    <div className="flex justify-between items-center mb-2">
-                        <div className="text-xs font-medium text-green-700">
-                            <i className="fa-solid fa-box-open mr-2" />
-                            {product.stockQuantity} in stock
-                        </div>
-                        <span className="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                            <i className="fa-solid fa-weight-hanging mr-2" />
-                            {product.variants[0].weight}{product.variants[0].unit}
+                {/* Product Information */}
+                <div className="p-2.5 space-y-3">
+                    {/* Name and Origin */}
+                    <div className="flex justify-between items-start">
+                        <label className="sm:text-lg text-md font-bold text-amber-800">{product.name}</label>
+                        <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full whitespace-nowrap">
+                            <i className={`fas fa-globe-${product.origin === 'indian' ? 'asia' : 'americas'} fa-lg mr-1`}></i>
+                            {product.origin.charAt(0).toUpperCase() + product.origin.slice(1)}
                         </span>
                     </div>
 
-                    {/* Price */}
-                    <div className="flex items-end justify-between">
+                    {/* Size and Weight */}
+                    <div className="flex gap-2 text-sm">
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                            <i className="fas fa-ruler mr-1"></i>
+                            {mainVariant.size.charAt(0).toUpperCase() + mainVariant.size.slice(1)}
+                        </span>
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                            <i className="fas fa-weight-hanging mr-1"></i>
+                            {mainVariant.singlePieceWeight}
+                            {mainVariant.weightUnit}
+                        </span>
+                    </div>
+
+                    {/* Pricing */}
+                    <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xl font-bold text-green-700">
-                                ${product.variants[0].price}
-                                {product.variants[0].originalPrice && (
-                                    <span className="ml-2 text-base text-red-500 line-through">
-                                        ${product.variants[0].originalPrice}
-                                    </span>
-                                )}
-                            </p>
+                            <span className="text-xl font-bold text-green-700">
+                                ₹{mainVariant.price}
+                                <span className="text-sm font-normal ml-1">/{mainVariant.pricingUnit}</span>
+                            </span>
+                            {mainVariant.originalPrice && (
+                                <span className="ml-2 text-sm text-red-500 line-through">
+                                    ₹{mainVariant.originalPrice}
+                                </span>
+                            )}
                         </div>
+                        <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full whitespace-nowrap">
+                            <i className="fas fa-box-open mr-1"></i>
+                            {product.stockQuantity} in stock
+                        </span>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1 mt-2">
+                        {product.tags?.slice(0, 3).map((tag, i) => (
+                            <span key={i} className="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded-full whitespace-nowrap">
+                                #{tag}
+                            </span>
+                        ))}
                     </div>
                 </div>
 
