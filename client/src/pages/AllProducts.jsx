@@ -5,6 +5,7 @@ import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ProductCard from '../components/ProductCard';
 import { filters } from '../lib/Constants';
+import { ToastContainer } from 'react-toastify';
 
 function AllProducts() {
   const dispatch = useDispatch();
@@ -90,6 +91,15 @@ function AllProducts() {
 
   return (
     <div className="flex w-screen h-screen pb-10 overflow-hidden">
+      <ToastContainer
+        position="top-right"
+        className="!top-12 !right-6 mt-4 mr-4 z-[9999]"
+        toastClassName="!bg-amber-50 !text-green-800 !rounded-xl !shadow-lg"
+        progressClassName="!bg-gradient-to-r from-amber-400 to-green-600"
+        autoClose={3000}
+        newestOnTop
+      />
+
       {/* Filters Section - Sticky */}
       <div className="hidden md:block min-h-screen xl:w-1/4 lg:w-1/4 w-54 py-4 xl:pl-10 lg:pl-6 md:pl-4 xl:pr-12 lg:pr-5 md:pr-2 bg-white/80 backdrop-blur-lg border-r-2 border-amber-100 sticky top-0">
         <div className="flex flex-col gap-6 w-full h-full">

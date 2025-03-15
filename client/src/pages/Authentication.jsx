@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch, useSelector } from "react-redux";
-import { FaEye, FaEyeSlash, FaGoogle} from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { GetUserDetails, LoginRoute, RegisterRoute, selectAuthError, selectUserOnline, selectUserToken, userInfoReset } from "../redux/slices/UserInfoSlice";
 
 const AuthPage = () => {
@@ -92,7 +92,7 @@ const AuthPage = () => {
         }
     }, [userOnline, err])
 
-    useEffect( () => {
+    useEffect(() => {
         if (isLoading) {
             if (err && !userToken) {
                 toast.error("Some Error! Please try again.", { autoClose: 5000 }); // Show success toast
@@ -116,15 +116,22 @@ const AuthPage = () => {
 
     return (
         <div className="flex h-[92vh] w-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-            <ToastContainer position="top-right" />
-            
+            <ToastContainer
+                position="top-right"
+                className="!top-12 !right-6 mt-4 mr-4 z-[9999]"
+                toastClassName="!bg-amber-50 !text-green-800 !rounded-xl !shadow-lg"
+                progressClassName="!bg-gradient-to-r from-amber-400 to-green-600"
+                autoClose={3000}
+                newestOnTop
+            />
+
             {/* Loading Overlay */}
             {isLoading && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                     <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
                 </div>
             )}
-            
+
             <div className="w-full h-full max-w-md bg-white rounded-xl shadow-lg p-8 overflow-y-scroll hide-scrollbar">
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">

@@ -13,7 +13,6 @@ function Home() {
     const dispatch = useDispatch();
 
     const [opacity, setOpacity] = useState(1);
-    const [columns, setColumns] = useState(1);
     const [imgNumber, setImgNumber] = useState(1);
 
     const userInfo = useSelector(selectUserInfo);
@@ -109,7 +108,14 @@ function Home() {
 
     return (
         <div className='flex flex-col w-full h-full overflow-y-scroll hide-scrollbar'>
-            <ToastContainer position="top-right" />
+            <ToastContainer
+                position="top-right"
+                className="!top-12 !right-6 mt-4 mr-4 z-[9999]"
+                toastClassName="!bg-amber-50 !text-green-800 !rounded-xl !shadow-lg"
+                progressClassName="!bg-gradient-to-r from-amber-400 to-green-600"
+                autoClose={3000}
+                newestOnTop
+            />
 
             <div className='flex flex-col gap-20 w-full h-full'>
 
