@@ -19,7 +19,10 @@ dotenv_1.default.config();
 const ConnectToMongoDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/';
-        yield mongoose_1.default.connect(url);
+        yield mongoose_1.default.connect(url, {
+            maxPoolSize: 10, // Maintain up to 10 socket connections
+            socketTimeoutMS: 45000 // Close sockets after 45 seconds of inactivity
+        });
         console.log("Successfully connected to the Database");
     }
     catch (error) {
