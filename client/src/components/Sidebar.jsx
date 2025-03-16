@@ -38,7 +38,7 @@ function Sidebar({ setState }) {
           {userInfo?.role === "Admin" && (
             <>
               <Link
-                to='/allproducts'
+                to='/shop'
                 className="flex items-center gap-3 p-3 rounded-lg text-amber-900 hover:bg-amber-200 transition-all duration-200 group shadow-inner hover:shadow-xl"
                 onClick={() => setState(false)}
               >
