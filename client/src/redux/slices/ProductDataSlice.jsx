@@ -53,6 +53,23 @@ export const getAllProducts = createAsyncThunk(
     }
 )
 
+export const getSingleProduct = createAsyncThunk(
+    'Get the single products details',
+    async (payload, thunkAPI) => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/product/${payload}`, {
+                withCredentials: true
+            })
+
+            const result = await response.data;
+
+            return result.success === true ? result.product : null;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+)
+
 export const updateProductRoute = createAsyncThunk(
     "Update the product data",
     async (payload, { getState, rejectWithValue }) => {
@@ -275,6 +292,17 @@ export const ProductSlice = createSlice({
             .addCase(getAllProducts.rejected, (state, action) => {
                 state.error = action.payload
                 state.allProducts = null
+            })
+            .addCase(getSingleProduct.pending, (state) => {
+                state.error = null
+            })
+            .addCase(getSingleProduct.fulfilled, (state, action) => {
+                state.singleProduct = action.payload
+                state.error = null
+            })
+            .addCase(getSingleProduct.rejected, (state, action) => {
+                state.error = action.payload
+                state.singleProduct = null
             })
             .addCase(updateProductRoute.pending, (state) => {
                 state.error = null

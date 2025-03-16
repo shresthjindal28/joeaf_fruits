@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeProductToCart = exports.addProductToCart = exports.removeProductToWishlist = exports.addProductToWishlist = exports.deleteProduct = exports.updateProduct = exports.getAllProducts = exports.addNewProduct = void 0;
+exports.removeProductToCart = exports.addProductToCart = exports.removeProductToWishlist = exports.addProductToWishlist = exports.deleteProduct = exports.updateProduct = exports.getSingleProduct = exports.getAllProducts = exports.addNewProduct = void 0;
 const User_1 = __importDefault(require("../lib/models/User"));
 const Product_1 = __importDefault(require("../lib/models/Product"));
 const addNewProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -38,10 +38,21 @@ const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(201).json({ success: true, allProducts });
     }
     catch (error) {
-        res.status(500).json({ message: "Error creating product" });
+        res.status(500).json({ message: "Error in finding the all products" });
     }
 });
 exports.getAllProducts = getAllProducts;
+const getSingleProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const product = yield Product_1.default.findById(id);
+        res.status(201).json({ success: true, product });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error in finding the product details" });
+    }
+});
+exports.getSingleProduct = getSingleProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId, role } = req.user;

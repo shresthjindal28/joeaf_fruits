@@ -26,7 +26,17 @@ export const getAllProducts = async (req: Request, res: Response) => {
         const allProducts = await Product.find();
         res.status(201).json({ success: true, allProducts });
     } catch (error) {
-        res.status(500).json({ message: "Error creating product" });
+        res.status(500).json({ message: "Error in finding the all products" });
+    }
+}
+
+export const getSingleProduct = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findById(id);
+        res.status(201).json({ success: true, product });
+    } catch (error) {
+        res.status(500).json({ message: "Error in finding the product details" });
     }
 }
 
