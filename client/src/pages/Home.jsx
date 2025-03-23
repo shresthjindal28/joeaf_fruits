@@ -237,7 +237,7 @@ function Home() {
                                 <div className="relative aspect-square bg-gray-100 overflow-hidden">
                                     <img
                                         src={item.images[0]}
-                                        alt=""
+                                        alt="Mango"
                                         loading='lazy'
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                         onClick={() => handleFruitClick(item)}

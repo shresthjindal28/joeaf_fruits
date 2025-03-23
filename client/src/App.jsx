@@ -1,10 +1,12 @@
+import React from 'react'
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState, startTransition } from "react";
 import { useSelector } from "react-redux";
 import { selectUserInfo } from "./redux/slices/UserInfoSlice";
 import Loader from "./components/Loader";
 
-// Lazy-loaded components
+// Lazy-loaded components with optimized loading
 const Home = lazy(() => import("./pages/Home"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
@@ -28,8 +30,11 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    setIsAuthenticated(!!userInfo);
-    setAuthChecked(true);
+    // Use startTransition to avoid blocking the UI during this state update
+    startTransition(() => {
+      setIsAuthenticated(!!userInfo);
+      setAuthChecked(true);
+    });
   }, [userInfo]);
 
   if (!authChecked) return <Loader />;
